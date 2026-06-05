@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Physical AI — Research Dashboard</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="3" stroke="#00e5a0" stroke-width="1.5"/>
+          <path d="M8 1v3M8 12v3M1 8h3M12 8h3" stroke="#00e5a0" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M3.05 3.05l2.12 2.12M10.83 10.83l2.12 2.12M3.05 12.95l2.12-2.12M10.83 5.17l2.12-2.12" stroke="#00e5a0" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-text">PHYSICAL AI</div>
+        <div class="logo-sub">RESEARCH DASHBOARD</div>
+      </div>
+    </div>
+    <div class="header-center" id="source-label">arXiv + Industry RSS Feeds</div>
+    <div class="header-right">
+      <div class="live-indicator">
+        <div class="live-dot"></div>
+        LIVE
+      </div>
+      <div class="timestamp" id="last-updated">--:--:-- UTC</div>
+    </div>
+  </header>
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <div class="stat-cell">
+      <div class="stat-label">TOTAL ITEMS</div>
+      <div class="stat-value green" id="stat-count">—</div>
+      <div class="stat-delta" id="stat-sub">connecting...</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">ACTIVE FILTER</div>
+      <div class="stat-value" id="stat-filter">ALL TOPICS</div>
+      <div class="stat-delta" id="stat-filtered">showing all</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">LATEST SUBMISSION</div>
+      <div class="stat-value amber" id="stat-latest">—</div>
+      <div class="stat-delta">published date</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">DATA GATEWAY</div>
+      <div class="stat-value blue" id="stat-gateway">LOCAL EXPRESS</div>
+      <div class="stat-delta" id="stat-gateway-sub">aggregation server</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">CACHE STATUS</div>
+      <div class="stat-value" id="stat-cache-status">PENDING</div>
+      <div class="stat-delta" id="stat-next">countdown: —</div>
+    </div>
+  </div>
+
+  <!-- Main Grid Layout -->
+  <div class="main">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="panel-label">CATEGORIES</div>
+      <div class="filter-group">
+        <div class="filter-item active" data-cat="all" onclick="setCategory('all', this)">
+          <div class="filter-dot" style="background:#00e5a0"></div>
+          <span class="filter-name">All topics</span>
+          <span class="filter-count" id="count-all">—</span>
+        </div>
+        <div class="filter-item" data-cat="cs.RO" onclick="setCategory('cs.RO', this)">
+          <div class="filter-dot" style="background:#00e5a0"></div>
+          <span class="filter-name">Robotics (cs.RO)</span>
+          <span class="filter-count" id="count-RO">—</span>
+        </div>
+        <div class="filter-item" data-cat="cs.AI" onclick="setCategory('cs.AI', this)">
+          <div class="filter-dot" style="background:#00b0ff"></div>
+          <span class="filter-name">Artificial Intelligence</span>
+          <span class="filter-count" id="count-AI">—</span>
+        </div>
+        <div class="filter-item" data-cat="cs.CV" onclick="setCategory('cs.CV', this)">
+          <div class="filter-dot" style="background:#ff9100"></div>
+          <span class="filter-name">Computer Vision</span>
+          <span class="filter-count" id="count-CV">—</span>
+        </div>
+        <div class="filter-item" data-cat="cs.LG" onclick="setCategory('cs.LG', this)">
+          <div class="filter-dot" style="background:#ff1744"></div>
+          <span class="filter-name">Machine Learning</span>
+          <span class="filter-count" id="count-LG">—</span>
+        </div>
+        <div class="filter-item" data-cat="cs.SY" onclick="setCategory('cs.SY', this)">
+          <div class="filter-dot" style="background:#d1c4e9"></div>
+          <span class="filter-name">Systems &amp; Control</span>
+          <span class="filter-count" id="count-SY">—</span>
+        </div>
+        <div class="filter-item" data-cat="industry-news" onclick="setCategory('industry-news', this)">
+          <div class="filter-dot" style="background:#eceff1"></div>
+          <span class="filter-name">Industry News</span>
+          <span class="filter-count" id="count-industry">—</span>
+        </div>
+      </div>
+
+      <div class="panel-label" style="margin-top:4px">TOPIC KEYWORDS</div>
+      <div class="filter-group" id="keyword-filters">
+        <div class="filter-item" data-kw="humanoid" onclick="setKeyword('humanoid', this)">
+          <div class="filter-dot" style="background:#00e5a0; opacity:0.4"></div>
+          <span class="filter-name">Humanoid robots</span>
+          <span class="filter-count" id="kw-humanoid">—</span>
+        </div>
+        <div class="filter-item" data-kw="manipulation" onclick="setKeyword('manipulation', this)">
+          <div class="filter-dot" style="background:#00b0ff; opacity:0.4"></div>
+          <span class="filter-name">Manipulation</span>
+          <span class="filter-count" id="kw-manipulation">—</span>
+        </div>
+        <div class="filter-item" data-kw="reinforcement" onclick="setKeyword('reinforcement', this)">
+          <div class="filter-dot" style="background:#ff9100; opacity:0.4"></div>
+          <span class="filter-name">Reinforcement learning</span>
+          <span class="filter-count" id="kw-reinforcement">—</span>
+        </div>
+        <div class="filter-item" data-kw="locomotion" onclick="setKeyword('locomotion', this)">
+          <div class="filter-dot" style="background:#ff1744; opacity:0.4"></div>
+          <span class="filter-name">Locomotion</span>
+          <span class="filter-count" id="kw-locomotion">—</span>
+        </div>
+        <div class="filter-item" data-kw="diffusion" onclick="setKeyword('diffusion', this)">
+          <div class="filter-dot" style="background:#d1c4e9; opacity:0.4"></div>
+          <span class="filter-name">Diffusion policy</span>
+          <span class="filter-count" id="kw-diffusion">—</span>
+        </div>
+        <div class="filter-item" data-kw="grasping" onclick="setKeyword('grasping', this)">
+          <div class="filter-dot" style="background:#00e5a0; opacity:0.4"></div>
+          <span class="filter-name">Grasping &amp; dexterity</span>
+          <span class="filter-count" id="kw-grasping">—</span>
+        </div>
+      </div>
+
+      <div class="panel-label" style="margin-top:4px">SOURCES</div>
+      <div style="padding: 4px 0;">
+        <div class="source-item">
+          <div class="source-dot" style="background:#00e5a0"></div>
+          <span class="source-name">arXiv cs.RO</span>
+          <a href="https://arxiv.org/list/cs.RO/recent" target="_blank" class="source-link">↗ open</a>
+        </div>
+        <div class="source-item">
+          <div class="source-dot" style="background:#00b0ff"></div>
+          <span class="source-name">arXiv cs.AI</span>
+          <a href="https://arxiv.org/list/cs.AI/recent" target="_blank" class="source-link">↗ open</a>
+        </div>
+        <div class="source-item">
+          <div class="source-dot" style="background:#ff9100"></div>
+          <span class="source-name">IEEE Spectrum</span>
+          <a href="https://spectrum.ieee.org/robotics" target="_blank" class="source-link">↗ open</a>
+        </div>
+        <div class="source-item">
+          <div class="source-dot" style="background:#d1c4e9"></div>
+          <span class="source-name">NVIDIA Robotics</span>
+          <a href="https://blogs.nvidia.com/blog/category/robotics/" target="_blank" class="source-link">↗ open</a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Feed -->
+    <main class="feed">
+      <div class="feed-header">
+        <span class="feed-title" id="feed-title-label">LATEST ENTRIES</span>
+        <div class="search-wrap">
+          <span class="search-icon">⌕</span>
+          <input type="text" class="search-input" placeholder="Search title, author, abstract..." id="search-input" oninput="onSearch()">
+        </div>
+        <button class="refresh-btn" id="refresh-btn" onclick="fetchFeedData(true)">
+          <svg id="refresh-icon" width="11" height="11" viewBox="0 0 12 12" fill="none">
+            <path d="M10 6A4 4 0 1 1 6 2V1l2.5 1.5L6 4V3a3 3 0 1 0 3 3h1z" fill="currentColor"/>
+          </svg>
+          REFRESH
+        </button>
+      </div>
+      
+      <!-- Dynamic Feed Container -->
+      <div id="feed-content">
+        <div class="loading-state">
+          <div class="loader-grid">
+            <div class="loader-cell"></div><div class="loader-cell"></div>
+            <div class="loader-cell"></div><div class="loader-cell"></div>
+            <div class="loader-cell"></div><div class="loader-cell"></div>
+            <div class="loader-cell"></div><div class="loader-cell"></div>
+          </div>
+          <div class="loading-text">COMMUNICATING WITH FEED AGGREGATOR SERVER...</div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Detail Panel -->
+    <aside class="detail">
+      <div class="detail-header">ENTRY DESCRIPTION</div>
+      <div id="detail-content">
+        <div class="detail-empty">
+          <div class="detail-empty-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <rect x="3" y="3" width="14" height="16" rx="2" stroke="#536b8c" stroke-width="1.2"/>
+              <path d="M6 7h8M6 10h8M6 13h5" stroke="#536b8c" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="detail-empty-text">SELECT AN ARTICLE OR PAPER<br>TO VIEW DETAILED SPECIFICATIONS</div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- Frontend Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
