@@ -4,6 +4,7 @@ let filteredFeedItems = [];
 let activeCategory = 'all';
 let activeKeyword = null;
 let searchQuery = '';
+let activeTimeWindow = 'all';
 let selectedId = null;
 
 // Auto-Refresh Configuration
@@ -147,6 +148,20 @@ function updateStatsPanel() {
 // Filter Controller
 function applyFilters() {
   let items = [...allFeedItems];
+
+  // 0. Time Window Filter
+  if (activeTimeWindow !== 'all') {
+    const now = new Date();
+    const cutoffDate = new Date();
+    const days = parseInt(activeTimeWindow);
+    if (!isNaN(days)) {
+      cutoffDate.setDate(now.getDate() - days);
+      items = items.filter(item => {
+        const pubDate = new Date(item.published);
+        return !isNaN(pubDate) && pubDate >= cutoffDate;
+      });
+    }
+  }
 
   // 1. Category Filter
   if (activeCategory !== 'all') {
@@ -727,5 +742,10 @@ function toggleMaximizeChart(isOpen) {
       maxTrendChartInstance = null;
     }
   }
+}
+
+function setTimeWindow(val) {
+  activeTimeWindow = val;
+  applyFilters();
 }
 
