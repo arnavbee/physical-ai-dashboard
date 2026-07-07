@@ -749,36 +749,3 @@ function setTimeWindow(val) {
   applyFilters();
 }
 
-function exportToCSV() {
-  const { labels, datasets } = generateChartData();
-  if (labels.length === 0) {
-    alert("No data available to export.");
-    return;
-  }
-
-  // Build CSV pivoted layout (columns: Week, Keyword1, Keyword2, ...)
-  const headers = ['Week', ...keywordsList.map(kw => keywordLabels[kw] || kw)];
-  let csvRows = [headers.join(',')];
-
-  labels.forEach((label, idx) => {
-    const row = [
-      `"${label}"`,
-      ...keywordsList.map(kw => datasets[kw][idx] || 0)
-    ];
-    csvRows.push(row.join(','));
-  });
-
-  const csvContent = csvRows.join('\n');
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.setAttribute("href", url);
-
-  const projectName = document.title.includes("Physical") ? "physical-ai" : "agentic-ai";
-  link.setAttribute("download", `${projectName}_trends_${new Date().toISOString().split('T')[0]}.csv`);
-  link.style.visibility = 'hidden';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
-
