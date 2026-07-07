@@ -503,10 +503,10 @@ function generateChartData() {
   // Sort weeks chronologically
   const sortedWeekKeys = Object.keys(weeksMap).sort();
   
-  // Format labels: "May 12"
+  // Format labels: "May 12, 26"
   const labels = sortedWeekKeys.map(k => {
     const d = weeksMap[k].date;
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' });
   });
 
   const datasets = {
