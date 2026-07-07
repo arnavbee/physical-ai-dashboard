@@ -948,3 +948,95 @@ body::before {
   text-shadow: var(--green-glow);
 }
 
+/* Custom Legend Selector Pills */
+.chart-legend-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 10px;
+}
+
+.legend-pill {
+  font-family: var(--mono);
+  font-size: 9px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  text-transform: uppercase;
+  transition: all 0.15s ease;
+  background: transparent;
+  border: 1px dotted var(--border);
+  color: var(--text-muted);
+}
+
+.legend-pill:hover {
+  color: var(--text-dim);
+  border-color: var(--text-muted);
+}
+
+/* Active State Colors with specific glows */
+.legend-pill.active.humanoid { color: var(--green); border-color: var(--green); background: var(--green-dim); box-shadow: var(--green-glow); }
+.legend-pill.active.manipulation { color: #00b0ff; border-color: #00b0ff; background: rgba(0, 176, 255, 0.08); box-shadow: 0 0 10px rgba(0, 176, 255, 0.3); }
+.legend-pill.active.reinforcement { color: #ff9100; border-color: #ff9100; background: rgba(255, 145, 0, 0.08); box-shadow: 0 0 10px rgba(255, 145, 0, 0.3); }
+.legend-pill.active.locomotion { color: #ff1744; border-color: #ff1744; background: rgba(255, 23, 68, 0.08); box-shadow: 0 0 10px rgba(255, 23, 68, 0.3); }
+.legend-pill.active.diffusion { color: #b388ff; border-color: #b388ff; background: rgba(179, 136, 255, 0.08); box-shadow: 0 0 10px rgba(179, 136, 255, 0.3); }
+.legend-pill.active.grasping { color: #29b6f6; border-color: #29b6f6; background: rgba(41, 182, 246, 0.08); box-shadow: 0 0 10px rgba(41, 182, 246, 0.3); }
+
+/* Fullscreen Modal Overlay */
+.chart-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(7, 6, 11, 0.85);
+  backdrop-filter: blur(15px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.chart-modal-content {
+  width: 92%;
+  max-width: 1200px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 0 1px var(--border-glow);
+  animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.chart-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+
+.chart-modal-canvas-wrap {
+  width: 100%;
+  height: 60vh;
+  position: relative;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px;
+}
+

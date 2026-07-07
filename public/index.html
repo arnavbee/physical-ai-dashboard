@@ -211,12 +211,25 @@
       </div>
 
       <!-- Chart Trend Container -->
-      <div id="chart-view-container" style="display: none; padding: 20px; flex-direction: column; gap: 20px; height: calc(100% - 90px); overflow-y: auto;">
-        <div style="background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 20px; position: relative;">
-          <canvas id="trendChart" style="width: 100%; max-height: 380px;"></canvas>
+      <div id="chart-view-container" style="display: none; padding: 20px; flex-direction: column; gap: 16px; height: calc(100% - 90px); overflow-y: auto;">
+        <div class="chart-header-row" style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="font-family: var(--mono); font-size: 9px; color: var(--text-muted); letter-spacing: 0.12em; text-transform: uppercase;">
+            Physical AI Concept Over-Time Frequency
+          </div>
+          <button class="refresh-btn" onclick="toggleMaximizeChart(true)" style="padding: 4px 10px; font-size: 9px;">
+            ⛶ MAXIMIZE CHART
+          </button>
+        </div>
+
+        <div class="chart-legend-selector" id="chart-legend-pills">
+          <!-- Populated dynamically via JS -->
+        </div>
+
+        <div style="background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 15px; position: relative;">
+          <canvas id="trendChart" style="width: 100%; max-height: 340px;"></canvas>
         </div>
         <div style="font-family: var(--mono); font-size: 10px; color: var(--text-dim); line-height: 1.6; border: 1px dashed var(--border); padding: 12px; border-radius: 4px; background: var(--bg2);">
-          <span style="color: var(--green); font-weight: bold;">[SYSTEM INSIGHT]</span>: The timeline chart aggregates publication dates of currently loaded papers grouped by week. Hover over nodes to inspect occurrences of Physical AI concepts (Humanoid, Manipulation, RL, Locomotion, Diffusion, and Grasping).
+          <span style="color: var(--green); font-weight: bold;">[SYSTEM INSIGHT]</span>: The timeline chart aggregates publication dates of currently loaded papers grouped by week. Use the toggle buttons above to **add** specific topics to the line graph for comparative analysis.
         </div>
       </div>
     </main>
@@ -237,6 +250,22 @@
       </div>
     </aside>
 
+  </div>
+
+  <!-- Fullscreen Chart Modal -->
+  <div id="chart-modal" class="chart-modal-overlay" style="display: none;">
+    <div class="chart-modal-content">
+      <div class="chart-modal-header">
+        <div class="logo-text" style="font-size: 13px; font-weight: 500; letter-spacing: 0.15em;">TIMELINE INSIGHTS — FULLSCREEN ANALYSIS</div>
+        <button class="refresh-btn" onclick="toggleMaximizeChart(false)">✕ CLOSE VIEW</button>
+      </div>
+      <div class="chart-legend-selector" id="modal-chart-legend-pills">
+        <!-- Populated dynamically via JS -->
+      </div>
+      <div class="chart-modal-canvas-wrap">
+        <canvas id="maxTrendChart"></canvas>
+      </div>
+    </div>
   </div>
 
   <!-- Frontend Logic -->

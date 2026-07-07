@@ -411,6 +411,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // Chart View & Data Controllers
 let activeView = 'feed';
 let trendChartInstance = null;
+let maxTrendChartInstance = null;
+let chartActiveKeywords = ['humanoid', 'manipulation', 'reinforcement']; // Start with these three active
 
 const keywordsList = ['humanoid', 'manipulation', 'reinforcement', 'locomotion', 'diffusion', 'grasping'];
 const keywordLabels = {
@@ -511,6 +513,48 @@ function generateChartData() {
   return { labels, datasets };
 }
 
+function renderCustomLegendPills() {
+  const containers = [
+    document.getElementById('chart-legend-pills'),
+    document.getElementById('modal-chart-legend-pills')
+  ];
+
+  containers.forEach(container => {
+    if (!container) return;
+
+    const pillsHtml = keywordsList.map(kw => {
+      const isActive = chartActiveKeywords.includes(kw);
+      const label = keywordLabels[kw];
+      return `
+        <button class="legend-pill ${kw} ${isActive ? 'active' : ''}" 
+                onclick="toggleKeywordDataset('${kw}')">
+          ${isActive ? '●' : '○'} ${label}
+        </button>
+      `;
+    }).join('');
+
+    container.innerHTML = pillsHtml;
+  });
+}
+
+function toggleKeywordDataset(kw) {
+  const index = chartActiveKeywords.indexOf(kw);
+  if (index > -1) {
+    if (chartActiveKeywords.length > 1) { // Keep at least one trend active
+      chartActiveKeywords.splice(index, 1);
+    }
+  } else {
+    chartActiveKeywords.push(kw);
+  }
+  
+  renderCustomLegendPills();
+  renderTrendChart();
+  
+  if (document.getElementById('chart-modal').style.display !== 'none') {
+    renderMaximizedTrendChart();
+  }
+}
+
 function renderTrendChart() {
   const canvas = document.getElementById('trendChart');
   if (!canvas) return;
@@ -521,16 +565,19 @@ function renderTrendChart() {
     trendChartInstance.destroy();
   }
 
+  renderCustomLegendPills();
+
   const datasetColors = {
     'humanoid': '#00e5a0',       // Green
     'manipulation': '#00b0ff',   // Blue
     'reinforcement': '#ff9100',  // Orange
     'locomotion': '#ff1744',     // Red
-    'diffusion': '#d1c4e9',      // Purple
+    'diffusion': '#b388ff',      // Purple
     'grasping': '#29b6f6'        // Light Blue
   };
 
-  const chartDatasets = Object.keys(datasetColors).map(kw => {
+  // Filter datasets to only render the active keyword trendlines
+  const chartDatasets = chartActiveKeywords.map(kw => {
     return {
       label: keywordLabels[kw],
       data: datasets[kw] || [],
@@ -554,16 +601,7 @@ function renderTrendChart() {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: {
-          position: 'top',
-          labels: {
-            color: '#e8e5f0',
-            font: {
-              family: 'IBM Plex Mono',
-              size: 10
-            }
-          }
-        },
+        legend: { display: false }, // Hide default legend
         tooltip: {
           backgroundColor: '#08070d',
           titleColor: '#00e5a0',
@@ -597,5 +635,97 @@ function renderTrendChart() {
       }
     }
   });
+}
+
+function renderMaximizedTrendChart() {
+  const canvas = document.getElementById('maxTrendChart');
+  if (!canvas) return;
+
+  const { labels, datasets } = generateChartData();
+
+  if (maxTrendChartInstance) {
+    maxTrendChartInstance.destroy();
+  }
+
+  const datasetColors = {
+    'humanoid': '#00e5a0',       // Green
+    'manipulation': '#00b0ff',   // Blue
+    'reinforcement': '#ff9100',  // Orange
+    'locomotion': '#ff1744',     // Red
+    'diffusion': '#b388ff',      // Purple
+    'grasping': '#29b6f6'        // Light Blue
+  };
+
+  const chartDatasets = chartActiveKeywords.map(kw => {
+    return {
+      label: keywordLabels[kw],
+      data: datasets[kw] || [],
+      borderColor: datasetColors[kw],
+      backgroundColor: datasetColors[kw] + '10',
+      borderWidth: 3, // Thicker lines in fullscreen
+      tension: 0.35,
+      pointRadius: 5,
+      pointHoverRadius: 8,
+      fill: false
+    };
+  });
+
+  maxTrendChartInstance = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: chartDatasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#08070d',
+          titleColor: '#00e5a0',
+          bodyColor: '#e8e5f0',
+          titleFont: { family: 'IBM Plex Mono', size: 11 },
+          bodyFont: { family: 'IBM Plex Mono', size: 11 },
+          borderColor: '#111520',
+          borderWidth: 1
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(0, 229, 160, 0.15)' },
+          ticks: {
+            color: '#9c97b8',
+            font: { family: 'IBM Plex Mono', size: 10 }
+          }
+        },
+        y: {
+          grid: { color: 'rgba(0, 229, 160, 0.15)' },
+          ticks: {
+            color: '#9c97b8',
+            precision: 0,
+            font: { family: 'IBM Plex Mono', size: 10 }
+          }
+        }
+      }
+    }
+  });
+}
+
+function toggleMaximizeChart(isOpen) {
+  const modal = document.getElementById('chart-modal');
+  if (!modal) return;
+
+  if (isOpen) {
+    modal.style.display = 'flex';
+    renderCustomLegendPills();
+    renderMaximizedTrendChart();
+  } else {
+    modal.style.display = 'none';
+    if (maxTrendChartInstance) {
+      maxTrendChartInstance.destroy();
+      maxTrendChartInstance = null;
+    }
+  }
 }
 
