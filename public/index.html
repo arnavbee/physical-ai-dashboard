@@ -12,6 +12,9 @@
   
   <!-- CSS Stylesheet -->
   <link rel="stylesheet" href="index.css">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -188,6 +191,12 @@
         </button>
       </div>
       
+      <!-- View Navigation Tabs -->
+      <div class="feed-tabs">
+        <button class="tab-btn active" id="tab-btn-feed" onclick="switchView('feed')">FEED VIEW</button>
+        <button class="tab-btn" id="tab-btn-chart" onclick="switchView('chart')">TIMELINE INSIGHTS</button>
+      </div>
+
       <!-- Dynamic Feed Container -->
       <div id="feed-content">
         <div class="loading-state">
@@ -198,6 +207,16 @@
             <div class="loader-cell"></div><div class="loader-cell"></div>
           </div>
           <div class="loading-text">COMMUNICATING WITH FEED AGGREGATOR SERVER...</div>
+        </div>
+      </div>
+
+      <!-- Chart Trend Container -->
+      <div id="chart-view-container" style="display: none; padding: 20px; flex-direction: column; gap: 20px; height: calc(100% - 90px); overflow-y: auto;">
+        <div style="background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 20px; position: relative;">
+          <canvas id="trendChart" style="width: 100%; max-height: 380px;"></canvas>
+        </div>
+        <div style="font-family: var(--mono); font-size: 10px; color: var(--text-dim); line-height: 1.6; border: 1px dashed var(--border); padding: 12px; border-radius: 4px; background: var(--bg2);">
+          <span style="color: var(--green); font-weight: bold;">[SYSTEM INSIGHT]</span>: The timeline chart aggregates publication dates of currently loaded papers grouped by week. Hover over nodes to inspect occurrences of Physical AI concepts (Humanoid, Manipulation, RL, Locomotion, Diffusion, and Grasping).
         </div>
       </div>
     </main>

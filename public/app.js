@@ -184,6 +184,9 @@ function applyFilters() {
   document.getElementById('stat-filtered').textContent = `Showing ${filteredFeedItems.length} matching`;
 
   renderFeedList();
+  if (activeView === 'chart') {
+    renderTrendChart();
+  }
 }
 
 // Render the feed cards
@@ -404,3 +407,195 @@ function resetCountdown() {
 document.addEventListener('DOMContentLoaded', () => {
   fetchFeedData(false);
 });
+
+// Chart View & Data Controllers
+let activeView = 'feed';
+let trendChartInstance = null;
+
+const keywordsList = ['humanoid', 'manipulation', 'reinforcement', 'locomotion', 'diffusion', 'grasping'];
+const keywordLabels = {
+  'humanoid': 'Humanoid Robots',
+  'manipulation': 'Manipulation',
+  'reinforcement': 'Reinforcement Learning',
+  'locomotion': 'Locomotion',
+  'diffusion': 'Diffusion Policy',
+  'grasping': 'Grasping & Dexterity'
+};
+
+function switchView(view) {
+  activeView = view;
+  const feedContent = document.getElementById('feed-content');
+  const chartContainer = document.getElementById('chart-view-container');
+  const feedTabBtn = document.getElementById('tab-btn-feed');
+  const chartTabBtn = document.getElementById('tab-btn-chart');
+
+  if (view === 'feed') {
+    feedContent.style.display = 'block';
+    chartContainer.style.display = 'none';
+    feedTabBtn.classList.add('active');
+    chartTabBtn.classList.remove('active');
+  } else {
+    feedContent.style.display = 'none';
+    chartContainer.style.display = 'flex';
+    feedTabBtn.classList.remove('active');
+    chartTabBtn.classList.add('active');
+    renderTrendChart();
+  }
+}
+
+function getMonday(d) {
+  d = new Date(d);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
+  const monday = new Date(d.setDate(diff));
+  monday.setHours(0, 0, 0, 0);
+  return monday;
+}
+
+function generateChartData() {
+  const weeksMap = {};
+
+  filteredFeedItems.forEach(item => {
+    const pubDate = new Date(item.published);
+    if (isNaN(pubDate)) return;
+    const mon = getMonday(pubDate);
+    const monKey = mon.toISOString().split('T')[0]; // YYYY-MM-DD
+
+    if (!weeksMap[monKey]) {
+      weeksMap[monKey] = {
+        date: mon,
+        counts: {
+          'humanoid': 0,
+          'manipulation': 0,
+          'reinforcement': 0,
+          'locomotion': 0,
+          'diffusion': 0,
+          'grasping': 0
+        }
+      };
+    }
+
+    const matchText = (item.title + ' ' + item.summary).toLowerCase();
+    keywordsList.forEach(kw => {
+      if (matchText.includes(kw)) {
+        weeksMap[monKey].counts[kw]++;
+      }
+    });
+  });
+
+  // Sort weeks chronologically
+  const sortedWeekKeys = Object.keys(weeksMap).sort();
+  
+  // Format labels: "May 12"
+  const labels = sortedWeekKeys.map(k => {
+    const d = weeksMap[k].date;
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  });
+
+  const datasets = {
+    'humanoid': [],
+    'manipulation': [],
+    'reinforcement': [],
+    'locomotion': [],
+    'diffusion': [],
+    'grasping': []
+  };
+
+  sortedWeekKeys.forEach(k => {
+    const counts = weeksMap[k].counts;
+    keywordsList.forEach(kw => {
+      datasets[kw].push(counts[kw]);
+    });
+  });
+
+  return { labels, datasets };
+}
+
+function renderTrendChart() {
+  const canvas = document.getElementById('trendChart');
+  if (!canvas) return;
+
+  const { labels, datasets } = generateChartData();
+
+  if (trendChartInstance) {
+    trendChartInstance.destroy();
+  }
+
+  const datasetColors = {
+    'humanoid': '#00e5a0',       // Green
+    'manipulation': '#00b0ff',   // Blue
+    'reinforcement': '#ff9100',  // Orange
+    'locomotion': '#ff1744',     // Red
+    'diffusion': '#d1c4e9',      // Purple
+    'grasping': '#29b6f6'        // Light Blue
+  };
+
+  const chartDatasets = Object.keys(datasetColors).map(kw => {
+    return {
+      label: keywordLabels[kw],
+      data: datasets[kw] || [],
+      borderColor: datasetColors[kw],
+      backgroundColor: datasetColors[kw] + '15',
+      borderWidth: 2,
+      tension: 0.3,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      fill: false
+    };
+  });
+
+  trendChartInstance = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: chartDatasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: {
+            color: '#e8e5f0',
+            font: {
+              family: 'IBM Plex Mono',
+              size: 10
+            }
+          }
+        },
+        tooltip: {
+          backgroundColor: '#08070d',
+          titleColor: '#00e5a0',
+          bodyColor: '#e8e5f0',
+          titleFont: { family: 'IBM Plex Mono' },
+          bodyFont: { family: 'IBM Plex Mono' },
+          borderColor: '#111520',
+          borderWidth: 1
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            color: 'rgba(0, 229, 160, 0.15)'
+          },
+          ticks: {
+            color: '#9c97b8',
+            font: { family: 'IBM Plex Mono', size: 9 }
+          }
+        },
+        y: {
+          grid: {
+            color: 'rgba(0, 229, 160, 0.15)'
+          },
+          ticks: {
+            color: '#9c97b8',
+            precision: 0,
+            font: { family: 'IBM Plex Mono', size: 9 }
+          }
+        }
+      }
+    }
+  });
+}
+
