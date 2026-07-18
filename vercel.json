@@ -16,6 +16,14 @@
       "dest": "/server.js"
     },
     {
+      "src": "/startup",
+      "dest": "/public/startup.html"
+    },
+    {
+      "src": "/startup-dashboard",
+      "dest": "/public/startup.html"
+    },
+    {
       "src": "/",
       "dest": "/public/index.html"
     },
