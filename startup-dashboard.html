@@ -3,1231 +3,1733 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Venture Intel — Standalone Dashboard</title>
+  <title>Venture Intel — Startup & SaaS Trends Dashboard</title>
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   
+  <!-- CSS Stylesheet -->
+  <style>
+/* Typography & General Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Premium Dark Sci-Fi Palette for Venture Capital & Startup Discovery */
+  --bg: #05070a;
+  --bg2: #0a0d14;
+  --bg3: #101420;
+  --bg4: #171d2d;
+  --border: #1a2233;
+  --border-glow: #2c3a54;
+  --border-active: #00f0ff;
+  
+  /* Cyber Venture Accent Colors */
+  --cyan: #00f0ff;
+  --cyan-dim: rgba(0, 240, 255, 0.08);
+  --cyan-mid: rgba(0, 240, 255, 0.3);
+  --cyan-glow: 0 0 10px rgba(0, 240, 255, 0.4);
+  
+  --violet: #bd59ff;
+  --violet-dim: rgba(189, 89, 255, 0.08);
+  --violet-mid: rgba(189, 89, 255, 0.3);
+  
+  --pink: #ff2e93;
+  --pink-dim: rgba(255, 46, 147, 0.08);
+  --pink-mid: rgba(255, 46, 147, 0.3);
+  
+  --blue: #0088ff;
+  --blue-dim: rgba(0, 136, 255, 0.08);
+  --blue-mid: rgba(0, 136, 255, 0.3);
+  
+  --yellow: #ffe600;
+  --yellow-dim: rgba(255, 230, 0, 0.08);
+  --yellow-mid: rgba(255, 230, 0, 0.3);
+
+  --green: #00e5a0;
+  --green-dim: rgba(0, 229, 160, 0.08);
+  --green-mid: rgba(0, 229, 160, 0.3);
+  
+  --text: #e1e7f0;
+  --text-dim: #8fa2bd;
+  --text-muted: #536b8c;
+  
+  /* Fonts */
+  --mono: 'IBM Plex Mono', 'Courier New', monospace;
+  --sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+html {
+  font-size: 14px;
+  background: var(--bg);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* CRT Scanline Overlay Effect */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.12) 2px,
+    rgba(0, 0, 0, 0.12) 4px
+  );
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* Header */
+.header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-mark {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--cyan);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--cyan-glow);
+}
+
+.logo-mark::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--cyan-dim);
+}
+
+.logo-mark svg {
+  z-index: 1;
+}
+
+.logo-text {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  color: var(--text);
+}
+
+.logo-sub {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  margin-top: 1px;
+}
+
+.header-center {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  text-align: center;
+  border: 1px dashed var(--border);
+  padding: 4px 12px;
+  border-radius: 4px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: flex-end;
+}
+
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--cyan);
+  letter-spacing: 0.1em;
+  font-weight: bold;
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: var(--cyan-glow);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.8); }
+}
+
+.timestamp {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+/* Status Bar */
+.status-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+  overflow-x: auto;
+}
+
+.status-bar::-webkit-scrollbar {
+  height: 2px;
+}
+.status-bar::-webkit-scrollbar-thumb {
+  background: var(--border-glow);
+}
+
+.stat-cell {
+  padding: 12px 20px;
+  border-right: 1px solid var(--border);
+  flex-shrink: 0;
+  min-width: 170px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.stat-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-family: var(--mono);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.stat-value.cyan { color: var(--cyan); text-shadow: var(--cyan-glow); }
+.stat-value.violet { color: var(--violet); }
+.stat-value.pink { color: var(--pink); }
+.stat-value.blue { color: var(--blue); }
+.stat-value.green { color: var(--green); }
+
+.stat-delta {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Main Layout Grid */
+.main {
+  display: grid;
+  grid-template-columns: 260px 1fr 340px;
+  height: calc(100vh - 105px);
+  overflow: hidden;
+}
+
+/* Sidebar Styling */
+.sidebar {
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  background: var(--bg2);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: var(--border-glow);
+  border-radius: 2px;
+}
+
+.panel-label {
+  padding: 14px 16px 8px;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.15em;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg2);
+  z-index: 10;
+  text-transform: uppercase;
+}
+
+.filter-group {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  gap: 8px;
+}
+
+.filter-item:hover {
+  background: var(--bg3);
+}
+
+.filter-item.active {
+  background: var(--cyan-dim);
+}
+
+.filter-name {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  flex: 1;
+  transition: color 0.15s ease;
+}
+
+.filter-item:hover .filter-name {
+  color: var(--text);
+}
+
+.filter-item.active .filter-name {
+  color: var(--cyan);
+  font-weight: 500;
+}
+
+.filter-count {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  min-width: 24px;
+  text-align: right;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.filter-item.active .filter-count {
+  color: var(--cyan);
+  border-color: var(--cyan-mid);
+}
+
+.filter-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Feed View Styling */
+.feed {
+  overflow-y: auto;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.feed::-webkit-scrollbar {
+  width: 4px;
+}
+.feed::-webkit-scrollbar-track {
+  background: transparent;
+}
+.feed::-webkit-scrollbar-thumb {
+  background: var(--border-glow);
+  border-radius: 2px;
+}
+
+.feed-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 10;
+  gap: 12px;
+}
+
+.feed-title {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.search-wrap {
+  position: relative;
+  flex: 1;
+  max-width: 320px;
+}
+
+.search-input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 6px 12px 6px 30px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text);
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.search-input:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.15);
+  background: var(--bg4);
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.refresh-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-dim);
+  padding: 6px 12px;
+  font-family: var(--mono);
+  font-size: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.05em;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.refresh-btn:hover {
+  border-color: var(--cyan-mid);
+  color: var(--cyan);
+  background: var(--cyan-dim);
+}
+
+.refresh-btn.spinning svg {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Feed View Tabs */
+.feed-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+}
+
+.tab-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 10px;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  transition: all 0.15s ease;
+}
+
+.tab-btn:hover {
+  color: var(--text-dim);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.tab-btn.active {
+  color: var(--cyan);
+  border-bottom-color: var(--cyan);
+  background: var(--bg3);
+}
+
+/* Paper Card Item */
+.paper-card {
+  border-bottom: 1px solid var(--border);
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: fadeIn 0.4s ease forwards;
+  opacity: 0;
+  border-left: 2px solid transparent;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.paper-card:hover {
+  background: var(--bg2);
+  border-left-color: var(--border-glow);
+}
+
+.paper-card.selected {
+  background: var(--bg3);
+  border-left-color: var(--cyan);
+  box-shadow: inset 3px 0 0 rgba(0, 240, 255, 0.1);
+}
+
+.paper-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.paper-id {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.paper-tag {
+  font-family: var(--mono);
+  font-size: 9px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.tag-ramp { background: var(--pink-dim); color: var(--pink); border: 1px solid rgba(255, 46, 147, 0.25); }
+.tag-harmonic { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.25); }
+.tag-a16z { background: var(--violet-dim); color: var(--violet); border: 1px solid rgba(189, 89, 255, 0.25); }
+.tag-fysk { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(0, 136, 255, 0.25); }
+.tag-nextplay { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(255, 230, 0, 0.25); }
+.tag-yc { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0, 229, 160, 0.25); }
+.tag-earlydays { background: var(--violet-dim); color: var(--violet); border: 1px solid rgba(189, 89, 255, 0.25); }
+.tag-general { background: var(--border-glow); color: var(--text-dim); }
+
+.paper-date {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+.paper-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.4;
+  margin-bottom: 8px;
+  transition: color 0.15s ease;
+}
+
+.paper-card:hover .paper-title {
+  color: #fff;
+}
+
+.paper-authors {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.paper-abstract {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-weight: 300;
+}
+
+/* Detail Panel Styling */
+.detail {
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  background: var(--bg2);
+  display: flex;
+  flex-direction: column;
+}
+
+.detail::-webkit-scrollbar {
+  width: 4px;
+}
+.detail::-webkit-scrollbar-track {
+  background: transparent;
+}
+.detail::-webkit-scrollbar-thumb {
+  background: var(--border-glow);
+  border-radius: 2px;
+}
+
+.detail-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.15em;
+  position: sticky;
+  top: 0;
+  background: var(--bg2);
+  z-index: 10;
+  text-transform: uppercase;
+}
+
+.detail-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--text-muted);
+  padding: 20px;
+  text-align: center;
+}
+
+.detail-empty-icon {
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.detail-empty-text {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  line-height: 1.8;
+  text-transform: uppercase;
+}
+
+.detail-content {
+  padding: 24px 20px;
+  flex: 1;
+}
+
+.detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.detail-title {
+  font-size: 17px;
+  font-weight: 500;
+  color: #fff;
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+
+.detail-authors {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.detail-date-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 14px;
+  background: var(--bg3);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.detail-date-cell .label {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.detail-date-cell .value {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.detail-section-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.15em;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  border-left: 2px solid var(--cyan);
+  padding-left: 8px;
+}
+
+.detail-abstract {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.8;
+  font-weight: 300;
+  margin-bottom: 24px;
+  white-space: pre-wrap;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.open-btn {
+  display: block;
+  width: 100%;
+  padding: 11px;
+  background: var(--cyan-dim);
+  border: 1px solid var(--cyan-mid);
+  border-radius: 4px;
+  color: var(--cyan);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  font-weight: 500;
+}
+
+.open-btn:hover {
+  background: rgba(0, 240, 255, 0.18);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.15);
+}
+
+.abs-btn {
+  display: block;
+  width: 100%;
+  padding: 11px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.abs-btn:hover {
+  border-color: var(--text-muted);
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Custom Interactive Widgets in Detail Pane */
+
+/* Ramp spend analysis module */
+.ramp-spend-container {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.ramp-metric-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+
+.ramp-metric-card {
+  text-align: center;
+}
+
+.ramp-metric-num {
+  font-family: var(--mono);
+  font-size: 15px;
+  color: var(--pink);
+  font-weight: bold;
+}
+
+.ramp-metric-label {
+  font-family: var(--sans);
+  font-size: 8px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.ramp-chart-title {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.ramp-bar-row {
+  margin-bottom: 10px;
+}
+
+.ramp-bar-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  margin-bottom: 4px;
+}
+
+.ramp-bar-label {
+  color: var(--text-dim);
+}
+
+.ramp-bar-val {
+  font-family: var(--mono);
+  color: var(--text);
+  font-weight: bold;
+}
+
+.ramp-bar-bg {
+  height: 8px;
+  background: var(--bg4);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ramp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--pink), var(--violet));
+  border-radius: 4px;
+  transition: width 1s ease-out;
+}
+
+/* Harmonic Hot 25 Table Module */
+.harmonic-hot25-container {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+
+.harmonic-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.harmonic-table th {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  text-align: left;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.harmonic-table td {
+  padding: 8px 8px;
+  border-bottom: 1px dashed var(--border);
+}
+
+.harmonic-table tr:last-child td {
+  border-bottom: none;
+}
+
+.h-rank {
+  font-family: var(--mono);
+  color: var(--cyan);
+  font-weight: bold;
+  width: 30px;
+}
+
+.h-name {
+  font-family: var(--sans);
+  color: #fff;
+  font-weight: 500;
+}
+
+.h-sector {
+  color: var(--text-dim);
+}
+
+.h-growth-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.h-growth-num {
+  font-family: var(--mono);
+  color: var(--green);
+  font-weight: 500;
+  min-width: 32px;
+}
+
+.h-progress {
+  height: 5px;
+  width: 40px;
+  background: var(--bg4);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.h-progress-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: 2px;
+}
+
+/* YC Startup directory list cards */
+.yc-directory-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.yc-startup-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px;
+  transition: border-color 0.15s ease;
+}
+
+.yc-startup-card:hover {
+  border-color: var(--green-mid);
+}
+
+.yc-startup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+}
+
+.yc-startup-name {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.yc-startup-stage {
+  font-family: var(--mono);
+  font-size: 8px;
+  background: var(--green-dim);
+  color: var(--green);
+  padding: 1px 6px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 229, 160, 0.15);
+}
+
+.yc-startup-desc {
+  font-family: var(--sans);
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin-bottom: 10px;
+  font-weight: 300;
+}
+
+.yc-startup-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 9px;
+  font-family: var(--mono);
+}
+
+.yc-startup-meta {
+  color: var(--text-muted);
+}
+
+.yc-startup-link {
+  color: var(--cyan);
+  text-decoration: none;
+  border: 1px solid var(--cyan-mid);
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: var(--cyan-dim);
+  transition: all 0.1s ease;
+}
+
+.yc-startup-link:hover {
+  background: rgba(0, 240, 255, 0.15);
+  box-shadow: 0 0 5px rgba(0, 240, 255, 0.1);
+}
+
+/* Substack and Newsletter structured job list */
+.newsletter-jobs-list {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px;
+  margin-bottom: 20px;
+}
+
+.newsletter-job-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.newsletter-job-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.newsletter-job-item:first-child {
+  padding-top: 0;
+}
+
+.n-job-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.n-job-meta {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-muted);
+}
+
+.n-job-source {
+  color: var(--yellow);
+  font-weight: 500;
+}
+
+/* Loader Loading Skeletons */
+.loading-state {
+  padding: 60px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.loader-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 8px);
+  gap: 4px;
+}
+
+.loader-cell {
+  width: 8px;
+  height: 8px;
+  background: var(--border);
+  border-radius: 2px;
+  animation: blink 1.2s ease-in-out infinite;
+}
+
+.loader-cell:nth-child(1) { animation-delay: 0s; }
+.loader-cell:nth-child(2) { animation-delay: 0.15s; }
+.loader-cell:nth-child(3) { animation-delay: 0.3s; }
+.loader-cell:nth-child(4) { animation-delay: 0.45s; }
+.loader-cell:nth-child(5) { animation-delay: 0.6s; }
+.loader-cell:nth-child(6) { animation-delay: 0.75s; }
+.loader-cell:nth-child(7) { animation-delay: 0.9s; }
+.loader-cell:nth-child(8) { animation-delay: 1.05s; }
+
+@keyframes blink {
+  0%, 100% { background: var(--border); }
+  50% { background: var(--cyan); box-shadow: var(--cyan-glow); }
+}
+
+.loading-text {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.error-state {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.error-state .open-btn {
+  margin-top: 15px;
+}
+
+/* No results state */
+.no-results {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  line-height: 1.8;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Sources details links list in sidebar */
+.source-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.source-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.source-name {
+  font-family: var(--sans);
+  font-size: 10px;
+  color: var(--text-dim);
+  flex: 1;
+}
+
+.source-link {
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--text-muted);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+}
+
+.source-link:hover {
+  color: var(--cyan);
+  border-color: var(--cyan-mid);
+  background: var(--cyan-dim);
+}
+
+/* Modal and Chart overrides */
+.chart-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 7, 10, 0.95);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+}
+
+.chart-modal-content {
+  width: 90%;
+  max-width: 1000px;
+  height: 80vh;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.chart-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.chart-modal-canvas-wrap {
+  flex: 1;
+  position: relative;
+  min-height: 0;
+}
+
+.chart-legend-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.legend-pill {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-dim);
+  padding: 4px 12px;
+  font-family: var(--mono);
+  font-size: 9px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.legend-pill:hover {
+  border-color: var(--text-muted);
+  color: var(--text);
+}
+
+.legend-pill.active {
+  background: var(--cyan-dim);
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.legend-pill.active.ramp { background: var(--pink-dim); border-color: var(--pink); color: var(--pink); }
+.legend-pill.active.harmonic { background: var(--cyan-dim); border-color: var(--cyan); color: var(--cyan); }
+.legend-pill.active.yc { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.legend-pill.active.substack { background: var(--violet-dim); border-color: var(--violet); color: var(--violet); }
+
+/* PSYCHO JOB TRACKER STYLES */
+#tracker-view-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 37px); /* Align with the header tabs */
+  overflow: hidden;
+}
+
+.tracker-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+}
+
+.tracker-stats {
+  display: flex;
+  gap: 16px;
+}
+
+.tracker-stat-pill {
+  font-family: var(--mono);
+  font-size: 10px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  padding: 3px 8px;
+  border-radius: 4px;
+  color: var(--text-dim);
+}
+
+.tracker-stat-pill strong {
+  color: var(--cyan);
+}
+
+.tracker-grid {
+  display: grid;
+  grid-template-columns: 240px 1fr 340px;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Left Sidebar - Startup list */
+.tracker-list-panel {
+  border-right: 1px solid var(--border);
+  background: var(--bg2);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.tracker-list-panel::-webkit-scrollbar {
+  width: 4px;
+}
+.tracker-list-panel::-webkit-scrollbar-thumb {
+  background: var(--border-glow);
+  border-radius: 2px;
+}
+
+.tracker-list-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tracker-add-btn {
+  background: var(--cyan-dim);
+  border: 1px solid var(--cyan-mid);
+  color: var(--cyan);
+  font-family: var(--mono);
+  font-size: 9px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tracker-add-btn:hover {
+  background: rgba(0, 240, 255, 0.18);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.15);
+}
+
+.tracker-item-card {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-left: 2px solid transparent;
+}
+
+.tracker-item-card:hover {
+  background: var(--bg3);
+  border-left-color: var(--border-glow);
+}
+
+.tracker-item-card.selected {
+  background: var(--bg3);
+  border-left-color: var(--cyan);
+  box-shadow: inset 3px 0 0 rgba(0, 240, 255, 0.05);
+}
+
+.tracker-item-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.tracker-item-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-muted);
+}
+
+.tracker-status-badge {
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 8px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.badge-not-pitching { background: var(--bg2); color: var(--text-muted); border: 1px solid var(--border); }
+.badge-drafting { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(255, 230, 0, 0.25); }
+.badge-pitched { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(0, 136, 255, 0.25); }
+.badge-interviewing { background: var(--violet-dim); color: var(--violet); border: 1px solid rgba(189, 89, 255, 0.25); }
+.badge-offer { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0, 229, 160, 0.25); }
+.badge-archived { background: var(--bg3); color: var(--text-muted); border: 1px solid var(--border); }
+
+/* Center Panel - Active Workspace */
+.tracker-workspace-panel {
+  background: var(--bg);
+  overflow-y: auto;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tracker-workspace-panel::-webkit-scrollbar {
+  width: 4px;
+}
+.tracker-workspace-panel::-webkit-scrollbar-thumb {
+  background: var(--border-glow);
+  border-radius: 2px;
+}
+
+.tracker-workspace-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: var(--text-muted);
+  text-align: center;
+  gap: 16px;
+  padding: 40px;
+}
+
+.tracker-section {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 18px;
+  margin-bottom: 20px;
+}
+
+.tracker-section-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--cyan);
+  letter-spacing: 0.1em;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  border-bottom: 1px dashed var(--border);
+  padding-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tracker-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.tracker-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.tracker-form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.tracker-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tracker-input, .tracker-textarea, .tracker-select {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px 12px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 12px;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.tracker-input:focus, .tracker-textarea:focus, .tracker-select:focus {
+  border-color: var(--cyan);
+  background: var(--bg4);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.1);
+}
+
+.tracker-textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+.tracker-checkbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.tracker-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+  color: var(--text-dim);
+}
+
+.tracker-checkbox-row input {
+  accent-color: var(--cyan);
+  cursor: pointer;
+}
+
+.tracker-row-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.tracker-btn-danger {
+  background: var(--pink-dim);
+  border: 1px solid var(--pink-mid);
+  color: var(--pink);
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tracker-btn-danger:hover {
+  background: rgba(255, 46, 147, 0.18);
+  box-shadow: 0 0 8px rgba(255, 46, 147, 0.15);
+}
+
+.tracker-btn-save {
+  background: var(--cyan-dim);
+  border: 1px solid var(--cyan-mid);
+  color: var(--cyan);
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tracker-btn-save:hover {
+  background: rgba(0, 240, 255, 0.18);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.15);
+}
+
+/* Right Panel - Methodology Guide */
+.tracker-guide-panel {
+  border-left: 1px solid var(--border);
+  background: var(--bg2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.tracker-guide-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tracker-guide-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+
+.tracker-guide-content::-webkit-scrollbar {
+  width: 4px;
+}
+.tracker-guide-content::-webkit-scrollbar-thumb {
+  background: var(--border-glow);
+  border-radius: 2px;
+}
+
+.tracker-guide-content h3 {
+  font-family: var(--mono);
+  color: var(--cyan);
+  font-size: 10px;
+  margin-top: 18px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-left: 2px solid var(--cyan);
+  padding-left: 6px;
+}
+
+.tracker-guide-content h3:first-of-type {
+  margin-top: 0;
+}
+
+.tracker-guide-content p {
+  margin-bottom: 12px;
+}
+
+.tracker-guide-content ul {
+  margin-left: 16px;
+  margin-bottom: 12px;
+}
+
+.tracker-guide-content li {
+  margin-bottom: 6px;
+}
+
+.tracker-guide-content code {
+  font-family: var(--mono);
+  color: var(--pink);
+  background: var(--bg3);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.tracker-guide-content blockquote {
+  border-left: 2px solid var(--violet);
+  padding-left: 10px;
+  margin: 12px 0;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.tracker-guide-content strong {
+  color: var(--text);
+}
+
+/* Modal Form styling */
+.tracker-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 7, 10, 0.85);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.tracker-modal-content {
+  width: 90%;
+  max-width: 500px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.tracker-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tracker-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tracker-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.add-tracker-import-btn {
+  background: var(--green-dim);
+  border: 1px solid var(--green-mid);
+  color: var(--green);
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.add-tracker-import-btn:hover {
+  background: rgba(0, 229, 160, 0.18);
+  box-shadow: 0 0 10px rgba(0, 229, 160, 0.15);
+}
+
+
+</style>
+  
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <style>
-    /* Typography & General Reset */
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      /* Premium Dark Sci-Fi Palette for Venture Capital & Startup Discovery */
-      --bg: #05070a;
-      --bg2: #0a0d14;
-      --bg3: #101420;
-      --bg4: #171d2d;
-      --border: #1a2233;
-      --border-glow: #2c3a54;
-      --border-active: #00f0ff;
-      
-      /* Cyber Venture Accent Colors */
-      --cyan: #00f0ff;
-      --cyan-dim: rgba(0, 240, 255, 0.08);
-      --cyan-mid: rgba(0, 240, 255, 0.3);
-      --cyan-glow: 0 0 10px rgba(0, 240, 255, 0.4);
-      
-      --violet: #bd59ff;
-      --violet-dim: rgba(189, 89, 255, 0.08);
-      --violet-mid: rgba(189, 89, 255, 0.3);
-      
-      --pink: #ff2e93;
-      --pink-dim: rgba(255, 46, 147, 0.08);
-      --pink-mid: rgba(255, 46, 147, 0.3);
-      
-      --blue: #0088ff;
-      --blue-dim: rgba(0, 136, 255, 0.08);
-      --blue-mid: rgba(0, 136, 255, 0.3);
-      
-      --yellow: #ffe600;
-      --yellow-dim: rgba(255, 230, 0, 0.08);
-      --yellow-mid: rgba(255, 230, 0, 0.3);
-
-      --green: #00e5a0;
-      --green-dim: rgba(0, 229, 160, 0.08);
-      --green-mid: rgba(0, 229, 160, 0.3);
-      
-      --text: #e1e7f0;
-      --text-dim: #8fa2bd;
-      --text-muted: #536b8c;
-      
-      /* Fonts */
-      --mono: 'IBM Plex Mono', 'Courier New', monospace;
-      --sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-
-    html {
-      font-size: 14px;
-      background: var(--bg);
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--sans);
-      min-height: 100vh;
-      overflow-x: hidden;
-      position: relative;
-    }
-
-    /* CRT Scanline Overlay Effect */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0, 0, 0, 0.12) 2px,
-        rgba(0, 0, 0, 0.12) 4px
-      );
-      pointer-events: none;
-      z-index: 1000;
-    }
-
-    /* Header */
-    .header {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      align-items: center;
-      padding: 16px 24px;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg2);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .logo-mark {
-      width: 32px;
-      height: 32px;
-      border: 1px solid var(--cyan);
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-      box-shadow: var(--cyan-glow);
-    }
-
-    .logo-mark::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--cyan-dim);
-    }
-
-    .logo-mark svg {
-      z-index: 1;
-    }
-
-    .logo-text {
-      font-family: var(--mono);
-      font-size: 13px;
-      font-weight: 500;
-      letter-spacing: 0.15em;
-      color: var(--text);
-    }
-
-    .logo-sub {
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--text-muted);
-      letter-spacing: 0.1em;
-      margin-top: 1px;
-    }
-
-    .header-center {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--text-muted);
-      letter-spacing: 0.12em;
-      text-align: center;
-      border: 1px dashed var(--border);
-      padding: 4px 12px;
-      border-radius: 4px;
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      justify-content: flex-end;
-    }
-
-    .live-indicator {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--cyan);
-      letter-spacing: 0.1em;
-      font-weight: bold;
-    }
-
-    .live-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--cyan);
-      box-shadow: var(--cyan-glow);
-      animation: pulse 2s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.3; transform: scale(0.8); }
-    }
-
-    .timestamp {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--text-dim);
-    }
-
-    /* Status Bar */
-    .status-bar {
-      display: flex;
-      gap: 0;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg2);
-      overflow-x: auto;
-    }
-
-    .status-bar::-webkit-scrollbar {
-      height: 2px;
-    }
-    .status-bar::-webkit-scrollbar-thumb {
-      background: var(--border-glow);
-    }
-
-    .stat-cell {
-      padding: 12px 20px;
-      border-right: 1px solid var(--border);
-      flex-shrink: 0;
-      min-width: 170px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .stat-label {
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--text-muted);
-      letter-spacing: 0.12em;
-      margin-bottom: 4px;
-    }
-
-    .stat-value {
-      font-family: var(--mono);
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--text);
-    }
-
-    .stat-value.cyan { color: var(--cyan); text-shadow: var(--cyan-glow); }
-    .stat-value.violet { color: var(--violet); }
-    .stat-value.pink { color: var(--pink); }
-    .stat-value.blue { color: var(--blue); }
-    .stat-value.green { color: var(--green); }
-
-    .stat-delta {
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    /* Main Layout Grid */
-    .main {
-      display: grid;
-      grid-template-columns: 260px 1fr 340px;
-      height: calc(100vh - 105px);
-      overflow: hidden;
-    }
-
-    /* Sidebar Styling */
-    .sidebar {
-      border-right: 1px solid var(--border);
-      overflow-y: auto;
-      background: var(--bg2);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .sidebar::-webkit-scrollbar {
-      width: 4px;
-    }
-    .sidebar::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    .sidebar::-webkit-scrollbar-thumb {
-      background: var(--border-glow);
-      border-radius: 2px;
-    }
-
-    .panel-label {
-      padding: 14px 16px 8px;
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--text-muted);
-      letter-spacing: 0.15em;
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      background: var(--bg2);
-      z-index: 10;
-      text-transform: uppercase;
-    }
-
-    .filter-group {
-      padding: 8px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .filter-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 16px;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      gap: 8px;
-    }
-
-    .filter-item:hover {
-      background: var(--bg3);
-    }
-
-    .filter-item.active {
-      background: var(--cyan-dim);
-    }
-
-    .filter-name {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--text-dim);
-      flex: 1;
-      transition: color 0.15s ease;
-    }
-
-    .filter-item:hover .filter-name {
-      color: var(--text);
-    }
-
-    .filter-item.active .filter-name {
-      color: var(--cyan);
-      font-weight: 500;
-    }
-
-    .filter-count {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--text-muted);
-      min-width: 24px;
-      text-align: right;
-      background: rgba(0, 0, 0, 0.25);
-      padding: 1px 6px;
-      border-radius: 4px;
-      border: 1px solid var(--border);
-    }
-
-    .filter-item.active .filter-count {
-      color: var(--cyan);
-      border-color: var(--cyan-mid);
-    }
-
-    .filter-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    /* Feed View Styling */
-    .feed {
-      overflow-y: auto;
-      background: var(--bg);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .feed::-webkit-scrollbar {
-      width: 4px;
-    }
-    .feed::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    .feed::-webkit-scrollbar-thumb {
-      background: var(--border-glow);
-      border-radius: 2px;
-    }
-
-    .feed-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 20px;
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      background: var(--bg);
-      z-index: 10;
-      gap: 12px;
-    }
-
-    .feed-title {
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--text-muted);
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-    }
-
-    .search-wrap {
-      position: relative;
-      flex: 1;
-      max-width: 320px;
-    }
-
-    .search-input {
-      width: 100%;
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 6px 12px 6px 30px;
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--text);
-      outline: none;
-      transition: all 0.15s ease;
-    }
-
-    .search-input:focus {
-      border-color: var(--cyan);
-      box-shadow: 0 0 8px rgba(0, 240, 255, 0.15);
-      background: var(--bg4);
-    }
-
-    .search-input::placeholder {
-      color: var(--text-muted);
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      font-size: 12px;
-      pointer-events: none;
-    }
-
-    .refresh-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      color: var(--text-dim);
-      padding: 6px 12px;
-      font-family: var(--mono);
-      font-size: 10px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      letter-spacing: 0.05em;
-      transition: all 0.15s ease;
-      white-space: nowrap;
-    }
-
-    .refresh-btn:hover {
-      border-color: var(--cyan-mid);
-      color: var(--cyan);
-      background: var(--cyan-dim);
-    }
-
-    .refresh-btn.spinning svg {
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* Feed View Tabs */
-    .feed-tabs {
-      display: flex;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg2);
-    }
-
-    .tab-btn {
-      flex: 1;
-      background: transparent;
-      border: none;
-      border-bottom: 2px solid transparent;
-      color: var(--text-muted);
-      font-family: var(--mono);
-      font-size: 10px;
-      padding: 10px;
-      cursor: pointer;
-      letter-spacing: 0.1em;
-      transition: all 0.15s ease;
-    }
-
-    .tab-btn:hover {
-      color: var(--text-dim);
-      background: rgba(255, 255, 255, 0.02);
-    }
-
-    .tab-btn.active {
-      color: var(--cyan);
-      border-bottom-color: var(--cyan);
-      background: var(--bg3);
-    }
-
-    /* Paper Card Item */
-    .paper-card {
-      border-bottom: 1px solid var(--border);
-      padding: 18px 20px;
-      cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      animation: fadeIn 0.4s ease forwards;
-      opacity: 0;
-      border-left: 2px solid transparent;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .paper-card:hover {
-      background: var(--bg2);
-      border-left-color: var(--border-glow);
-    }
-
-    .paper-card.selected {
-      background: var(--bg3);
-      border-left-color: var(--cyan);
-      box-shadow: inset 3px 0 0 rgba(0, 240, 255, 0.1);
-    }
-
-    .paper-meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
-    }
-
-    .paper-id {
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--text-muted);
-      letter-spacing: 0.05em;
-    }
-
-    .paper-tag {
-      font-family: var(--mono);
-      font-size: 9px;
-      padding: 2px 8px;
-      border-radius: 3px;
-      letter-spacing: 0.05em;
-      font-weight: 500;
-      text-transform: uppercase;
-    }
-
-    .tag-ramp { background: var(--pink-dim); color: var(--pink); border: 1px solid rgba(255, 46, 147, 0.25); }
-    .tag-harmonic { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.25); }
-    .tag-a16z { background: var(--violet-dim); color: var(--violet); border: 1px solid rgba(189, 89, 255, 0.25); }
-    .tag-fysk { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(0, 136, 255, 0.25); }
-    .tag-nextplay { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(255, 230, 0, 0.25); }
-    .tag-yc { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0, 229, 160, 0.25); }
-    .tag-earlydays { background: var(--violet-dim); color: var(--violet); border: 1px solid rgba(189, 89, 255, 0.25); }
-    .tag-general { background: var(--border-glow); color: var(--text-dim); }
-
-    .paper-date {
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--text-muted);
-      margin-left: auto;
-    }
-
-    .paper-title {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text);
-      line-height: 1.4;
-      margin-bottom: 8px;
-      transition: color 0.15s ease;
-    }
-
-    .paper-card:hover .paper-title {
-      color: #fff;
-    }
-
-    .paper-authors {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .paper-abstract {
-      font-size: 11px;
-      color: var(--text-dim);
-      line-height: 1.6;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      font-weight: 300;
-    }
-
-    /* Detail Panel Styling */
-    .detail {
-      border-left: 1px solid var(--border);
-      overflow-y: auto;
-      background: var(--bg2);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .detail::-webkit-scrollbar {
-      width: 4px;
-    }
-    .detail::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    .detail::-webkit-scrollbar-thumb {
-      background: var(--border-glow);
-      border-radius: 2px;
-    }
-
-    .detail-header {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--border);
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--text-muted);
-      letter-spacing: 0.15em;
-      position: sticky;
-      top: 0;
-      background: var(--bg2);
-      z-index: 10;
-      text-transform: uppercase;
-    }
-
-    .detail-empty {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      color: var(--text-muted);
-      padding: 20px;
-      text-align: center;
-    }
-
-    .detail-empty-icon {
-      width: 48px;
-      height: 48px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--bg);
-    }
-
-    .detail-empty-text {
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 0.08em;
-      line-height: 1.8;
-      text-transform: uppercase;
-    }
-
-    .detail-content {
-      padding: 24px 20px;
-      flex: 1;
-    }
-
-    .detail-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 16px;
-    }
-
-    .detail-title {
-      font-size: 17px;
-      font-weight: 500;
-      color: #fff;
-      line-height: 1.4;
-      margin-bottom: 12px;
-    }
-
-    .detail-authors {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--text-muted);
-      margin-bottom: 20px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .detail-date-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 24px;
-      padding: 14px;
-      background: var(--bg3);
-      border-radius: 6px;
-      border: 1px solid var(--border);
-    }
-
-    .detail-date-cell .label {
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--text-muted);
-      letter-spacing: 0.1em;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-    }
-
-    .detail-date-cell .value {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--text);
-      font-weight: 500;
-    }
-
-    .detail-section-label {
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--text-muted);
-      letter-spacing: 0.15em;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      border-left: 2px solid var(--cyan);
-      padding-left: 8px;
-    }
-
-    .detail-abstract {
-      font-size: 12px;
-      color: var(--text-dim);
-      line-height: 1.8;
-      font-weight: 300;
-      margin-bottom: 24px;
-      white-space: pre-wrap;
-    }
-
-    .action-buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .open-btn {
-      display: block;
-      width: 100%;
-      padding: 11px;
-      background: var(--cyan-dim);
-      border: 1px solid var(--cyan-mid);
-      border-radius: 4px;
-      color: var(--cyan);
-      font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      transition: all 0.15s ease;
-      font-weight: 500;
-    }
-
-    .open-btn:hover {
-      background: rgba(0, 240, 255, 0.18);
-      box-shadow: 0 0 10px rgba(0, 240, 255, 0.15);
-    }
-
-    .abs-btn {
-      display: block;
-      width: 100%;
-      padding: 11px;
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      color: var(--text-dim);
-      font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      transition: all 0.15s ease;
-    }
-
-    .abs-btn:hover {
-      border-color: var(--text-muted);
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.02);
-    }
-
-    /* Custom Interactive Widgets in Detail Pane */
-    .ramp-spend-container {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 16px;
-      margin-bottom: 20px;
-    }
-
-    .ramp-metric-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 16px;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 12px;
-    }
-
-    .ramp-metric-card {
-      text-align: center;
-    }
-
-    .ramp-metric-num {
-      font-family: var(--mono);
-      font-size: 15px;
-      color: var(--pink);
-      font-weight: bold;
-    }
-
-    .ramp-metric-label {
-      font-family: var(--sans);
-      font-size: 8px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      margin-top: 2px;
-    }
-
-    .ramp-chart-title {
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--text-dim);
-      margin-bottom: 10px;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-
-    .ramp-bar-row {
-      margin-bottom: 10px;
-    }
-
-    .ramp-bar-meta {
-      display: flex;
-      justify-content: space-between;
-      font-size: 10px;
-      margin-bottom: 4px;
-    }
-
-    .ramp-bar-label {
-      color: var(--text-dim);
-    }
-
-    .ramp-bar-val {
-      font-family: var(--mono);
-      color: var(--text);
-      font-weight: bold;
-    }
-
-    .ramp-bar-bg {
-      height: 8px;
-      background: var(--bg4);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .ramp-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--pink), var(--violet));
-      border-radius: 4px;
-    }
-
-    .harmonic-hot25-container {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 12px 14px;
-      margin-bottom: 20px;
-      overflow-x: auto;
-    }
-
-    .harmonic-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 11px;
-    }
-
-    .harmonic-table th {
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      text-align: left;
-      padding: 6px 8px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .harmonic-table td {
-      padding: 8px 8px;
-      border-bottom: 1px dashed var(--border);
-    }
-
-    .h-rank {
-      font-family: var(--mono);
-      color: var(--cyan);
-      font-weight: bold;
-      width: 30px;
-    }
-
-    .h-name {
-      font-family: var(--sans);
-      color: #fff;
-      font-weight: 500;
-    }
-
-    .h-sector {
-      color: var(--text-dim);
-    }
-
-    .h-growth-wrap {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .h-growth-num {
-      font-family: var(--mono);
-      color: var(--green);
-      font-weight: 500;
-      min-width: 32px;
-    }
-
-    .h-progress {
-      height: 5px;
-      width: 40px;
-      background: var(--bg4);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-
-    .h-progress-fill {
-      height: 100%;
-      background: var(--green);
-      border-radius: 2px;
-    }
-
-    .yc-directory-container {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .yc-startup-card {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 14px;
-    }
-
-    .yc-startup-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 6px;
-    }
-
-    .yc-startup-name {
-      font-family: var(--sans);
-      font-size: 13px;
-      font-weight: 500;
-      color: #fff;
-    }
-
-    .yc-startup-stage {
-      font-family: var(--mono);
-      font-size: 8px;
-      background: var(--green-dim);
-      color: var(--green);
-      padding: 1px 6px;
-      border-radius: 3px;
-      border: 1px solid rgba(0, 229, 160, 0.15);
-    }
-
-    .yc-startup-desc {
-      font-family: var(--sans);
-      font-size: 11px;
-      color: var(--text-dim);
-      line-height: 1.5;
-      margin-bottom: 10px;
-      font-weight: 300;
-    }
-
-    .yc-startup-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 9px;
-      font-family: var(--mono);
-    }
-
-    .yc-startup-meta {
-      color: var(--text-muted);
-    }
-
-    .yc-startup-link {
-      color: var(--cyan);
-      text-decoration: none;
-      border: 1px solid var(--cyan-mid);
-      padding: 2px 8px;
-      border-radius: 3px;
-      background: var(--cyan-dim);
-    }
-
-    .newsletter-jobs-list {
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 14px;
-      margin-bottom: 20px;
-    }
-
-    .newsletter-job-item {
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .newsletter-job-item:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-
-    .newsletter-job-item:first-child {
-      padding-top: 0;
-    }
-
-    .n-job-title {
-      font-size: 12px;
-      font-weight: 500;
-      color: #fff;
-      margin-bottom: 4px;
-    }
-
-    .n-job-meta {
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--text-muted);
-    }
-
-    /* Loader Loading Skeletons */
-    .loading-state {
-      padding: 60px 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
-      color: var(--text-muted);
-      text-align: center;
-    }
-
-    .loader-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 8px);
-      gap: 4px;
-    }
-
-    .loader-cell {
-      width: 8px;
-      height: 8px;
-      background: var(--border);
-      border-radius: 2px;
-      animation: blink 1.2s ease-in-out infinite;
-    }
-
-    .loader-cell:nth-child(1) { animation-delay: 0s; }
-    .loader-cell:nth-child(2) { animation-delay: 0.15s; }
-    .loader-cell:nth-child(3) { animation-delay: 0.3s; }
-    .loader-cell:nth-child(4) { animation-delay: 0.45s; }
-    .loader-cell:nth-child(5) { animation-delay: 0.6s; }
-    .loader-cell:nth-child(6) { animation-delay: 0.75s; }
-    .loader-cell:nth-child(7) { animation-delay: 0.9s; }
-    .loader-cell:nth-child(8) { animation-delay: 1.05s; }
-
-    @keyframes blink {
-      0%, 100% { background: var(--border); }
-      50% { background: var(--cyan); box-shadow: var(--cyan-glow); }
-    }
-
-    .loading-text {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-
-    .error-state {
-      padding: 40px 20px;
-      text-align: center;
-    }
-
-    .no-results {
-      padding: 60px 20px;
-      text-align: center;
-      color: var(--text-muted);
-      font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      line-height: 1.8;
-      text-transform: uppercase;
-    }
-
-    .source-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 16px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .source-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .source-name {
-      font-family: var(--sans);
-      font-size: 10px;
-      color: var(--text-dim);
-      flex: 1;
-    }
-
-    .source-link {
-      font-family: var(--mono);
-      font-size: 8px;
-      color: var(--text-muted);
-      text-decoration: none;
-      letter-spacing: 0.05em;
-      padding: 2px 6px;
-      border: 1px solid var(--border);
-      border-radius: 2px;
-      text-transform: uppercase;
-    }
-
-    .source-link:hover {
-      color: var(--cyan);
-      border-color: var(--cyan-mid);
-      background: var(--cyan-dim);
-    }
-
-    .chart-modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(5, 7, 10, 0.95);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      backdrop-filter: blur(8px);
-    }
-
-    .chart-modal-content {
-      width: 90%;
-      max-width: 1000px;
-      height: 80vh;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-    }
-
-    .chart-modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .chart-modal-canvas-wrap {
-      flex: 1;
-      position: relative;
-      min-height: 0;
-    }
-
-    .chart-legend-selector {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-
-    .legend-pill {
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: var(--text-dim);
-      padding: 4px 12px;
-      font-family: var(--mono);
-      font-size: 9px;
-      cursor: pointer;
-    }
-
-    .legend-pill.active {
-      background: var(--cyan-dim);
-      border-color: var(--cyan);
-      color: var(--cyan);
-    }
-
-    .legend-pill.active.ramp { background: var(--pink-dim); border-color: var(--pink); color: var(--pink); }
-    .legend-pill.active.harmonic { background: var(--cyan-dim); border-color: var(--cyan); color: var(--cyan); }
-    .legend-pill.active.yc { background: var(--green-dim); border-color: var(--green); color: var(--green); }
-    .legend-pill.active.substack { background: var(--violet-dim); border-color: var(--violet); color: var(--violet); }
-  </style>
 </head>
 <body>
 
@@ -1242,14 +1744,14 @@
       </div>
       <div>
         <div class="logo-text">VENTURE INTEL</div>
-        <div class="logo-sub">STANDALONE APP</div>
+        <div class="logo-sub">STARTUP &amp; TRENDS</div>
       </div>
     </div>
-    <div class="header-center" id="source-label">CORS Proxy Gateway Aggregate Feed</div>
+    <div class="header-center" id="source-label">Ramp · Harmonic · a16z · YC · Substack</div>
     <div class="header-right">
       <div class="live-indicator">
         <div class="live-dot"></div>
-        LIVE (PROXIED)
+        LIVE
       </div>
       <div class="timestamp" id="last-updated">--:--:-- UTC</div>
     </div>
@@ -1274,13 +1776,13 @@
     </div>
     <div class="stat-cell">
       <div class="stat-label">DATA GATEWAY</div>
-      <div class="stat-value blue" id="stat-gateway">CORS PROXIES</div>
-      <div class="stat-delta" id="stat-gateway-sub">browser fetch</div>
+      <div class="stat-value blue" id="stat-gateway">EXPRESS API</div>
+      <div class="stat-delta" id="stat-gateway-sub">aggregation server</div>
     </div>
     <div class="stat-cell">
       <div class="stat-label">CACHE STATUS</div>
-      <div class="stat-value" id="stat-cache-status">LOCAL DATA</div>
-      <div class="stat-delta" id="stat-next">standalone mode</div>
+      <div class="stat-value" id="stat-cache-status">PENDING</div>
+      <div class="stat-delta" id="stat-next">countdown: —</div>
     </div>
   </div>
 
@@ -1289,110 +1791,178 @@
     
     <!-- Sidebar -->
     <aside class="sidebar">
-      <div class="panel-label">CATEGORIES</div>
-      <div class="filter-group">
-        <div class="filter-item active" data-cat="all" onclick="setCategory('all', this)">
-          <div class="filter-dot" style="background:#00f0ff"></div>
-          <span class="filter-name">All sources</span>
-          <span class="filter-count" id="count-all">—</span>
+      <!-- Discovery Sidebar Views -->
+      <div id="sidebar-discovery-views">
+        <div class="panel-label">CATEGORIES</div>
+        <div class="filter-group">
+          <div class="filter-item active" data-cat="all" onclick="setCategory('all', this)">
+            <div class="filter-dot" style="background:#00f0ff"></div>
+            <span class="filter-name">All sources</span>
+            <span class="filter-count" id="count-all">—</span>
+          </div>
+          <div class="filter-item" data-cat="market-reports" onclick="setCategory('market-reports', this)">
+            <div class="filter-dot" style="background:#ff2e93"></div>
+            <span class="filter-name">Market &amp; Spend Reports</span>
+            <span class="filter-count" id="count-market">—</span>
+          </div>
+          <div class="filter-item" data-cat="talent-jobs" onclick="setCategory('talent-jobs', this)">
+            <div class="filter-dot" style="background:#ffe600"></div>
+            <span class="filter-name">Talent &amp; Job Feeds</span>
+            <span class="filter-count" id="count-talent">—</span>
+          </div>
+          <div class="filter-item" data-cat="pitch-showcases" onclick="setCategory('pitch-showcases', this)">
+            <div class="filter-dot" style="background:#0088ff"></div>
+            <span class="filter-name">Pitch &amp; Showcases</span>
+            <span class="filter-count" id="count-pitch">—</span>
+          </div>
+          <div class="filter-item" data-cat="startup-directories" onclick="setCategory('startup-directories', this)">
+            <div class="filter-dot" style="background:#00e5a0"></div>
+            <span class="filter-name">Startup Directories</span>
+            <span class="filter-count" id="count-directories">—</span>
+          </div>
+          <div class="filter-item" data-cat="substack-insights" onclick="setCategory('substack-insights', this)">
+            <div class="filter-dot" style="background:#bd59ff"></div>
+            <span class="filter-name">Substack &amp; Insights</span>
+            <span class="filter-count" id="count-substack">—</span>
+          </div>
         </div>
-        <div class="filter-item" data-cat="market-reports" onclick="setCategory('market-reports', this)">
-          <div class="filter-dot" style="background:#ff2e93"></div>
-          <span class="filter-name">Market &amp; Spend Reports</span>
-          <span class="filter-count" id="count-market">—</span>
+
+        <div class="panel-label" style="margin-top:4px">SECTOR KEYWORDS</div>
+        <div class="filter-group" id="keyword-filters">
+          <div class="filter-item" data-kw="agent" onclick="setKeyword('agent', this)">
+            <div class="filter-dot" style="background:#00f0ff; opacity:0.4"></div>
+            <span class="filter-name">AI Agents &amp; ML</span>
+            <span class="filter-count" id="kw-agent">—</span>
+          </div>
+          <div class="filter-item" data-kw="saas" onclick="setKeyword('saas', this)">
+            <div class="filter-dot" style="background:#ff2e93; opacity:0.4"></div>
+            <span class="filter-name">SaaS &amp; Spend</span>
+            <span class="filter-count" id="kw-saas">—</span>
+          </div>
+          <div class="filter-item" data-kw="developer" onclick="setKeyword('developer', this)">
+            <div class="filter-dot" style="background:#ffe600; opacity:0.4"></div>
+            <span class="filter-name">Developer Tools</span>
+            <span class="filter-count" id="kw-developer">—</span>
+          </div>
+          <div class="filter-item" data-kw="robot" onclick="setKeyword('robot', this)">
+            <div class="filter-dot" style="background:#00e5a0; opacity:0.4"></div>
+            <span class="filter-name">Hardware &amp; Robotics</span>
+            <span class="filter-count" id="kw-robot">—</span>
+          </div>
+          <div class="filter-item" data-kw="fintech" onclick="setKeyword('fintech', this)">
+            <div class="filter-dot" style="background:#0088ff; opacity:0.4"></div>
+            <span class="filter-name">Fintech &amp; Finance</span>
+            <span class="filter-count" id="kw-fintech">—</span>
+          </div>
+          <div class="filter-item" data-kw="bio" onclick="setKeyword('bio', this)">
+            <div class="filter-dot" style="background:#bd59ff; opacity:0.4"></div>
+            <span class="filter-name">BioTech &amp; Health</span>
+            <span class="filter-count" id="kw-bio">—</span>
+          </div>
         </div>
-        <div class="filter-item" data-cat="talent-jobs" onclick="setCategory('talent-jobs', this)">
-          <div class="filter-dot" style="background:#ffe600"></div>
-          <span class="filter-name">Talent &amp; Job Feeds</span>
-          <span class="filter-count" id="count-talent">—</span>
-        </div>
-        <div class="filter-item" data-cat="pitch-showcases" onclick="setCategory('pitch-showcases', this)">
-          <div class="filter-dot" style="background:#0088ff"></div>
-          <span class="filter-name">Pitch &amp; Showcases</span>
-          <span class="filter-count" id="count-pitch">—</span>
-        </div>
-        <div class="filter-item" data-cat="startup-directories" onclick="setCategory('startup-directories', this)">
-          <div class="filter-dot" style="background:#00e5a0"></div>
-          <span class="filter-name">Startup Directories</span>
-          <span class="filter-count" id="count-directories">—</span>
-        </div>
-        <div class="filter-item" data-cat="substack-insights" onclick="setCategory('substack-insights', this)">
-          <div class="filter-dot" style="background:#bd59ff"></div>
-          <span class="filter-name">Substack &amp; Insights</span>
-          <span class="filter-count" id="count-substack">—</span>
+
+        <div class="panel-label" style="margin-top:4px">INDEXED SOURCES</div>
+        <div style="padding: 4px 0;" id="sidebar-sources-links">
+          <div class="source-item">
+            <div class="source-dot" style="background:#ff2e93"></div>
+            <span class="source-name">Ramp Vendor Reports</span>
+            <a href="https://ramp.com/blog" target="_blank" class="source-link">↗ site</a>
+          </div>
+          <div class="source-item">
+            <div class="source-dot" style="background:#00f0ff"></div>
+            <span class="source-name">Harmonic Hot 25</span>
+            <a href="https://harmonic.ai" target="_blank" class="source-link">↗ site</a>
+          </div>
+          <div class="source-item">
+            <div class="source-dot" style="background:#bd59ff"></div>
+            <span class="source-name">a16z Build</span>
+            <a href="https://a16zbuild.substack.com" target="_blank" class="source-link">↗ feed</a>
+          </div>
+          <div class="source-item">
+            <div class="source-dot" style="background:#0088ff"></div>
+            <span class="source-name">Founders You Should Know</span>
+            <a href="https://foundersysk.substack.com" target="_blank" class="source-link">↗ feed</a>
+          </div>
+          <div class="source-item">
+            <div class="source-dot" style="background:#ffe600"></div>
+            <span class="source-name">Next Play newsletter</span>
+            <a href="https://nextplayso.substack.com" target="_blank" class="source-link">↗ feed</a>
+          </div>
+          <div class="source-item">
+            <div class="source-dot" style="background:#00e5a0"></div>
+            <span class="source-name">YC Startup Directory</span>
+            <a href="https://www.ycombinator.com/companies" target="_blank" class="source-link">↗ site</a>
+          </div>
+          <div class="source-item">
+            <div class="source-dot" style="background:#bd59ff"></div>
+            <span class="source-name">Early Days Substack</span>
+            <a href="https://earlydays.substack.com" target="_blank" class="source-link">↗ feed</a>
+          </div>
         </div>
       </div>
 
-      <div class="panel-label" style="margin-top:4px">SECTOR KEYWORDS</div>
-      <div class="filter-group" id="keyword-filters">
-        <div class="filter-item" data-kw="agent" onclick="setKeyword('agent', this)">
-          <div class="filter-dot" style="background:#00f0ff; opacity:0.4"></div>
-          <span class="filter-name">AI Agents &amp; ML</span>
-          <span class="filter-count" id="kw-agent">—</span>
+      <!-- Tracker Sidebar Views -->
+      <div id="sidebar-tracker-views" style="display: none;">
+        <div class="tracker-list-header">
+          <span class="panel-label" style="padding: 0; border: none;">PSYCHO TARGETS</span>
+          <button class="tracker-add-btn" onclick="toggleAddModal(true)">✚ ADD STARTUP</button>
         </div>
-        <div class="filter-item" data-kw="saas" onclick="setKeyword('saas', this)">
-          <div class="filter-dot" style="background:#ff2e93; opacity:0.4"></div>
-          <span class="filter-name">SaaS &amp; Spend</span>
-          <span class="filter-count" id="kw-saas">—</span>
-        </div>
-        <div class="filter-item" data-kw="developer" onclick="setKeyword('developer', this)">
-          <div class="filter-dot" style="background:#ffe600; opacity:0.4"></div>
-          <span class="filter-name">Developer Tools</span>
-          <span class="filter-count" id="kw-developer">—</span>
-        </div>
-        <div class="filter-item" data-kw="robot" onclick="setKeyword('robot', this)">
-          <div class="filter-dot" style="background:#00e5a0; opacity:0.4"></div>
-          <span class="filter-name">Hardware &amp; Robotics</span>
-          <span class="filter-count" id="kw-robot">—</span>
-        </div>
-        <div class="filter-item" data-kw="fintech" onclick="setKeyword('fintech', this)">
-          <div class="filter-dot" style="background:#0088ff; opacity:0.4"></div>
-          <span class="filter-name">Fintech &amp; Finance</span>
-          <span class="filter-count" id="kw-fintech">—</span>
-        </div>
-        <div class="filter-item" data-kw="bio" onclick="setKeyword('bio', this)">
-          <div class="filter-dot" style="background:#bd59ff; opacity:0.4"></div>
-          <span class="filter-name">BioTech &amp; Health</span>
-          <span class="filter-count" id="kw-bio">—</span>
+        <div id="tracker-list-container">
+          <!-- Populated dynamically via JavaScript -->
         </div>
       </div>
     </aside>
 
     <!-- Main Feed -->
     <main class="feed">
-      <div class="feed-header">
-        <span class="feed-title" id="feed-title-label">LATEST ENTRIES</span>
-        <div class="search-wrap">
-          <span class="search-icon">⌕</span>
-          <input type="text" class="search-input" placeholder="Search report title, builder, summary..." id="search-input" oninput="onSearch()">
-        </div>
-        <select class="search-input" id="time-window-select" onchange="setTimeWindow(this.value)" style="width: auto; padding: 5px 12px; cursor: pointer; text-transform: uppercase; font-size: 10px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg3); color: var(--text); outline: none;">
-          <option value="all">All Time</option>
-          <option value="1">1 Day</option>
-          <option value="7">7 Days</option>
-          <option value="30">1 Month</option>
-          <option value="90">3 Months</option>
-          <option value="180">6 Months</option>
-          <option value="365">1 Year</option>
-        </select>
-        <button class="refresh-btn" id="refresh-btn" onclick="fetchFeedData(true)">
-          REFRESH FEED
-        </button>
-      </div>
-      
       <!-- View Navigation Tabs -->
       <div class="feed-tabs">
         <button class="tab-btn active" id="tab-btn-feed" onclick="switchView('feed')">FEED VIEW</button>
         <button class="tab-btn" id="tab-btn-chart" onclick="switchView('chart')">VENTURE TRENDLINES</button>
+        <button class="tab-btn" id="tab-btn-tracker" onclick="switchView('tracker')">PSYCHO JOB TRACKER</button>
       </div>
 
-      <!-- Dynamic Feed Container -->
-      <div id="feed-content">
-        <!-- Feed list rendered here -->
+      <!-- Feed View Container -->
+      <div id="feed-view-container">
+        <div class="feed-header">
+          <span class="feed-title" id="feed-title-label">LATEST ENTRIES</span>
+          <div class="search-wrap">
+            <span class="search-icon">⌕</span>
+            <input type="text" class="search-input" placeholder="Search report title, builder, summary..." id="search-input" oninput="onSearch()">
+          </div>
+          <select class="search-input" id="time-window-select" onchange="setTimeWindow(this.value)" style="width: auto; padding: 5px 12px; cursor: pointer; text-transform: uppercase; font-size: 10px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg3); color: var(--text); outline: none;">
+            <option value="all">All Time</option>
+            <option value="1">1 Day</option>
+            <option value="7">7 Days</option>
+            <option value="30">1 Month</option>
+            <option value="90">3 Months</option>
+            <option value="180">6 Months</option>
+            <option value="365">1 Year</option>
+          </select>
+          <button class="refresh-btn" id="refresh-btn" onclick="fetchFeedData(true)">
+            <svg id="refresh-icon" width="11" height="11" viewBox="0 0 12 12" fill="none">
+              <path d="M10 6A4 4 0 1 1 6 2V1l2.5 1.5L6 4V3a3 3 0 1 0 3 3h1z" fill="currentColor"/>
+            </svg>
+            REFRESH
+          </button>
+        </div>
+        
+        <!-- Dynamic Feed Container -->
+        <div id="feed-content">
+          <div class="loading-state">
+            <div class="loader-grid">
+              <div class="loader-cell"></div><div class="loader-cell"></div>
+              <div class="loader-cell"></div><div class="loader-cell"></div>
+              <div class="loader-cell"></div><div class="loader-cell"></div>
+              <div class="loader-cell"></div><div class="loader-cell"></div>
+            </div>
+            <div class="loading-text">COMMUNICATING WITH VENTURE AGGREGATOR PIPELINE...</div>
+          </div>
+        </div>
       </div>
 
       <!-- Chart Trend Container -->
-      <div id="chart-view-container" style="display: none; padding: 20px; flex-direction: column; gap: 16px; height: calc(100% - 90px); overflow-y: auto;">
+      <div id="chart-view-container" style="display: none; padding: 20px; flex-direction: column; gap: 16px; height: calc(100% - 37px); overflow-y: auto;">
         <div class="chart-header-row" style="display: flex; justify-content: space-between; align-items: center;">
           <div style="font-family: var(--mono); font-size: 9px; color: var(--text-muted); letter-spacing: 0.12em; text-transform: uppercase;">
             Venture Intelligence Over-Time Source Output
@@ -1409,21 +1979,83 @@
         <div style="background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 15px; position: relative;">
           <canvas id="trendChart" style="width: 100%; max-height: 340px;"></canvas>
         </div>
+        <div style="font-family: var(--mono); font-size: 10px; color: var(--text-dim); line-height: 1.6; border: 1px dashed var(--border); padding: 12px; border-radius: 4px; background: var(--bg2);">
+          <span style="color: var(--cyan); font-weight: bold;">[PIPELINE ANALYTICS]</span>: This trendline chart tracks publication frequency of articles and reports aggregated from Substack feeds and curated indexes. Toggling sources above highlights comparative output velocity.
+        </div>
+      </div>
+
+      <!-- Job Tracker Workspace Container -->
+      <div id="tracker-workspace-container" style="display: none; height: calc(100% - 37px); flex-direction: column; overflow: hidden;">
+        <div class="tracker-bar">
+          <div class="tracker-stats">
+            <div class="tracker-stat-pill">TOTAL TARGETS: <strong id="tracker-stat-total">0</strong></div>
+            <div class="tracker-stat-pill">TWITTER FOLLOWED: <strong id="tracker-stat-followed">0 / 0</strong></div>
+            <div class="tracker-stat-pill">OPEN SOURCE JACKPOT: <strong id="tracker-stat-os">0 / 0</strong></div>
+            <div class="tracker-stat-pill">PITCH SENT: <strong id="tracker-stat-pitched">0 / 0</strong></div>
+          </div>
+        </div>
+        <div id="tracker-workspace-content" style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+          <!-- Dynamically populated from JS -->
+        </div>
       </div>
     </main>
 
     <!-- Detail Panel -->
     <aside class="detail">
-      <div class="detail-header">ENTRY ANALYSIS &amp; DATA</div>
-      <div id="detail-content">
-        <div class="detail-empty">
-          <div class="detail-empty-icon">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <rect x="3" y="3" width="14" height="16" rx="2" stroke="#536b8c" stroke-width="1.2"/>
-              <path d="M6 7h8M6 10h8M6 13h5" stroke="#536b8c" stroke-width="1.2" stroke-linecap="round"/>
-            </svg>
+      <!-- Discovery Detail Views -->
+      <div id="detail-discovery-views" style="height: 100%; display: flex; flex-direction: column;">
+        <div class="detail-header">ENTRY ANALYSIS &amp; DATA</div>
+        <div id="detail-content" style="flex: 1; overflow-y: auto;">
+          <div class="detail-empty">
+            <div class="detail-empty-icon">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <rect x="3" y="3" width="14" height="16" rx="2" stroke="#536b8c" stroke-width="1.2"/>
+                <path d="M6 7h8M6 10h8M6 13h5" stroke="#536b8c" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="detail-empty-text">SELECT AN ARTICLE OR INTELLIGENCE REPORT<br>TO VIEW DYNAMIC METRICS</div>
           </div>
-          <div class="detail-empty-text">SELECT AN ARTICLE OR INTELLIGENCE REPORT<br>TO VIEW DYNAMIC METRICS</div>
+        </div>
+      </div>
+
+      <!-- Tracker Detail Views (Methodology Guide) -->
+      <div id="detail-tracker-views" class="tracker-guide-panel" style="display: none; height: 100%;">
+        <div class="tracker-guide-header">
+          <span>PSYCHO METHODOLOGY</span>
+        </div>
+        <div class="tracker-guide-content">
+          <h3>The Core Strategy</h3>
+          <p>Traditional job hunting (mass-applying) is dead. Great startups hire from relationships and out-of-band proof of value. Your goal: <strong>obsess over 3-5 high-conviction targets</strong> and force your way in by solving their problems before they even interview you.</p>
+
+          <h3>1. Spotting Signal</h3>
+          <p>Use the Venture Intel dashboard feeds:</p>
+          <ul>
+            <li><strong>Ramp Reports:</strong> Spot categories with growing spend. Target the fastest-growing vendors (they need headcount).</li>
+            <li><strong>Harmonic Hot 25:</strong> Identify startups with massive headcount velocity spikes. They are actively scale-hiring.</li>
+            <li><strong>YC Directory:</strong> Target newly funded early-stage batches (W26/S25). They have fresh capital and need builders.</li>
+          </ul>
+
+          <h3>2. Digital Reconnaissance</h3>
+          <p>Find the founders and core team members on Twitter/X and get their emails.</p>
+          <blockquote>
+            <strong>Tip:</strong> Search the company's official Twitter account, and check its followers list. The founders and early engineers almost always follow it. Target team members with fewer followers; they are far more likely to read and reply.
+          </blockquote>
+
+          <h3>3. Open Source Jackpot</h3>
+          <p>If their codebase is open source: <strong>You hit the jackpot.</strong> Stop reading and start contributing! Fix bugs, optimize files, improve documentation. Your name will appear directly in their repository before you pitch them.</p>
+          <p>If they are closed-source or you are in a non-technical role: observe their landing page, docs, or community channels. Write down 5 friction points and brainstorm clear, actionable solutions.</p>
+
+          <h3>4. Authentically Interact</h3>
+          <p>Engage with the founders' tweets and posts. Suggest ideas, ask creative questions, and share helpful resources. <strong>Avoid sycophant/jerk vibes.</strong> Build a positive digital relationship so they recognize your name when you reach out.</p>
+
+          <h3>5. The Value Pitch</h3>
+          <p>Create a detailed project/doc (Notion/Obsidian) specifically for them. Show, don't tell:
+            <ul>
+              <li><strong>Engineers:</strong> Code a working prototype of a requested feature, write a comprehensive test suite, or draft a refactor plan.</li>
+              <li><strong>Growth/Ops:</strong> A 30-day community launch blueprint, copy rewrites, or a breakdown of marketing channels.</li>
+            </ul>
+            Pitch it via direct email or Cold DM. "Hey [Name], built this for you guys to solve [Problem]. Hope it helps!"
+          </p>
         </div>
       </div>
     </aside>
@@ -1446,812 +2078,1406 @@
     </div>
   </div>
 
+  <!-- Add Startup Modal -->
+  <div id="tracker-add-modal" class="tracker-modal-overlay" style="display: none;">
+    <div class="tracker-modal-content">
+      <div class="tracker-modal-header">
+        <div class="logo-text" style="color: var(--cyan);">ADD TARGET STARTUP</div>
+        <button class="refresh-btn" onclick="toggleAddModal(false)">✕</button>
+      </div>
+      <div class="tracker-modal-body">
+        <div class="tracker-form-group">
+          <label class="tracker-label">Startup Name</label>
+          <input type="text" id="modal-add-name" class="tracker-input" placeholder="e.g. Physical Intelligence">
+        </div>
+        <div class="tracker-form-group">
+          <label class="tracker-label">Website Domain</label>
+          <input type="text" id="modal-add-site" class="tracker-input" placeholder="e.g. physicalintelligence.company">
+        </div>
+        <div class="tracker-form-group">
+          <label class="tracker-label">Source / Notes</label>
+          <input type="text" id="modal-add-source" class="tracker-input" placeholder="e.g. Harmonic Hot 25, self-found">
+        </div>
+        <div class="tracker-form-group">
+          <label class="tracker-label">Brief Description</label>
+          <textarea id="modal-add-desc" class="tracker-textarea" placeholder="What do they build? why do you want to work here?"></textarea>
+        </div>
+      </div>
+      <div class="tracker-modal-footer">
+        <button class="tracker-btn-danger" style="padding: 6px 12px;" onclick="toggleAddModal(false)">CANCEL</button>
+        <button class="tracker-btn-save" style="padding: 6px 12px;" onclick="saveNewStartupFromModal()">ADD TO TRACKER</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Frontend Logic -->
   <script>
-    // Application State
-    let allFeedItems = [];
-    let filteredFeedItems = [];
-    let activeCategory = 'all';
-    let activeKeyword = null;
-    let searchQuery = '';
-    let activeTimeWindow = 'all';
-    let selectedId = null;
+// Application State
+let allFeedItems = [];
+let filteredFeedItems = [];
+let activeCategory = 'all';
+let activeKeyword = null;
+let searchQuery = '';
+let activeTimeWindow = 'all';
+let selectedId = null;
 
-    // CORS Proxies
-    const PROXIES = [
-      url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-      url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-      url => `https://cors-anywhere.herokuapp.com/${url}`,
-      url => `https://thingproxy.freeboard.io/fetch/${url}`,
-    ];
+// Auto-Refresh Configuration
+const CACHE_DURATION_SEC = 15 * 60; // 15 minutes
+let countdownSeconds = CACHE_DURATION_SEC;
+let countdownTimer = null;
 
-    const STARTUP_RSS_FEEDS = [
-      { name: "a16z Build", url: "https://a16zbuild.substack.com/feed" },
-      { name: "Founders You Should Know", url: "https://foundersysk.substack.com/feed" },
-      { name: "Next Play", url: "https://nextplayso.substack.com/feed" },
-      { name: "Early Days Substack", url: "https://earlydays.substack.com/feed" }
-    ];
+// Category ACCENT Tag Mapping
+const SOURCE_TAGS = {
+  'Ramp Vendor Reports': ['tag-ramp', 'Ramp Spend'],
+  'Harmonic Hot 25': ['tag-harmonic', 'Harmonic 25'],
+  'a16z Build': ['tag-a16z', 'a16z Build'],
+  'Founders You Should Know': ['tag-fysk', 'FYSK Pitch'],
+  'Next Play': ['tag-nextplay', 'Next Play'],
+  'YC Startup Directory': ['tag-yc', 'YC Batch'],
+  'Early Days Substack': ['tag-earlydays', 'Early Days']
+};
 
-    // High fidelity curated mock data
-    const CURATED_STARTUP_ITEMS = [
-      {
-        arxivId: null,
-        title: "Ramp SaaS Spend Report: State of SaaS Q2 2026",
-        summary: "Ramp's analysis of SaaS spending trends across 15,000+ companies. SaaS spend rose 14.2% quarter-over-quarter, driven by AI integrations and API usage. Duplicate software subscriptions declined as companies consolidated tools, while security and data platforms saw steady gains. OpenAI and Anthropic continue to rank as the fastest-growing vendors by spend volume.",
-        published: "2026-07-10T12:00:00Z",
-        updated: "2026-07-10T12:00:00Z",
-        authors: ["Ramp Spend Analytics Group"],
-        cats: ["market-reports", "saas-spend"],
-        link: "https://ramp.com/blog/state-of-saas-spend-q2-2026",
-        pdfLink: null,
-        source: "Ramp Vendor Reports",
-        customData: {
-          type: "ramp-spend",
-          totalSpendGrowth: "+14.2% QoQ",
-          duplicateReduction: "-8.5%",
-          avgSeatPrice: "$42.50",
-          growthVendors: [
-            { name: "Anthropic", growth: "210%", category: "AI/ML" },
-            { name: "OpenAI", growth: "145%", category: "AI/ML" },
-            { name: "Vercel", growth: "88%", category: "Infrastructure" },
-            { name: "Supabase", growth: "76%", category: "Databases" },
-            { name: "Figma", growth: "42%", category: "Design" }
-          ],
-          categoryShare: [
-            { name: "AI & Machine Learning", share: 31 },
-            { name: "Cloud Infrastructure", share: 26 },
-            { name: "Collaboration & Docs", share: 19 },
-            { name: "Security & Identity", share: 14 },
-            { name: "Finance & Operations", share: 10 }
-          ]
-        }
-      },
-      {
-        arxivId: null,
-        title: "Ramp Monthly Vendor Report: Top 10 Fastest-Growing SaaS Vendors (June 2026)",
-        summary: "An overview of the fastest-growing software tools by transaction volume and dollar spend. This month features substantial gains in local-first database tools, browser automation frameworks, and specialized AI developer infrastructure.",
-        published: "2026-06-15T12:00:00Z",
-        updated: "2026-06-15T12:00:00Z",
-        authors: ["Ramp Editorial Team"],
-        cats: ["market-reports", "vendor-rankings"],
-        link: "https://ramp.com/blog/fastest-growing-saas-june-2026",
-        pdfLink: null,
-        source: "Ramp Vendor Reports",
-        customData: {
-          type: "ramp-spend",
-          totalSpendGrowth: "+11.8% MoM",
-          duplicateReduction: "-5.2%",
-          avgSeatPrice: "$39.80",
-          growthVendors: [
-            { name: "Linear", growth: "54%", category: "Project Management" },
-            { name: "Sentry", growth: "48%", category: "Monitoring" },
-            { name: "PostHog", growth: "46%", category: "Analytics" },
-            { name: "Retool", growth: "39%", category: "Internal Tools" },
-            { name: "Tailscale", growth: "35%", category: "Networking" }
-          ],
-          categoryShare: [
-            { name: "Developer Tools", share: 35 },
-            { name: "AI & ML APIs", share: 22 },
-            { name: "Productivity", share: 20 },
-            { name: "Data & Security", share: 15 },
-            { name: "Sales & Marketing", share: 8 }
-          ]
-        }
-      },
-      {
-        arxivId: null,
-        title: "Harmonic Hot 25: Q2 2026 Venture Discovery Index",
-        summary: "Harmonic's quarterly index tracking the 25 fastest-growing venture-backed startups based on hiring velocity, capital efficiency, and market signal. Key trends this quarter show a surge in humanoid robotics platforms, hardware-software co-design, and open-source database systems.",
-        published: "2026-07-05T08:00:00Z",
-        updated: "2026-07-05T08:00:00Z",
-        authors: ["Harmonic Deal Intelligence Team"],
-        cats: ["startup-rankings", "venture-capital"],
-        link: "https://harmonic.ai/blog/hot-25-q2-2026",
-        pdfLink: null,
-        source: "Harmonic Hot 25",
-        customData: {
-          type: "harmonic-hot25",
-          quarter: "Q2 2026",
-          avgGrowthRate: "+32.4% Headcount",
-          totalFundingRaised: "$1.45B",
-          startups: [
-            { rank: 1, name: "Cognition AI", sector: "AI Software Engineering", funding: "Series B ($175M)", headcount: 140, growth: 120, site: "cognition.ai" },
-            { rank: 2, name: "Physical Intelligence", sector: "Robotics Foundation Models", funding: "Series A ($70M)", headcount: 85, growth: 95, site: "physicalintelligence.company" },
-            { rank: 3, name: "Hebbian Neural Systems", sector: "Embodied AI", funding: "Seed ($15M)", headcount: 24, growth: 80, site: "hebbian.ai" },
-            { rank: 4, name: "Figure", sector: "Humanoid Robotics", funding: "Series C ($675M)", headcount: 280, growth: 45, site: "figure.ai" },
-            { rank: 5, name: "Decart AI", sector: "Interactive Generative Media", funding: "Series A ($21M)", headcount: 48, growth: 74, site: "decart.ai" },
-            { rank: 6, name: "Cursor (Anysphere)", sector: "AI Development Environments", funding: "Series A ($8M)", headcount: 35, growth: 68, site: "cursor.com" },
-            { rank: 7, name: "Pika Labs", sector: "AI Video Platforms", funding: "Series A ($55M)", headcount: 62, growth: 60, site: "pika.art" },
-            { rank: 8, name: "Perplexity AI", sector: "Conversational Search Engine", funding: "Series C ($250M)", headcount: 220, growth: 50, site: "perplexity.ai" },
-            { rank: 9, name: "ElevenLabs", sector: "Generative Audio & Voice", funding: "Series B ($80M)", headcount: 180, growth: 42, site: "elevenlabs.io" },
-            { rank: 10, name: "Harvey AI", sector: "Professional Service AI", funding: "Series C ($100M)", headcount: 160, growth: 38, site: "harvey.ai" }
-          ]
-        }
-      },
-      {
-        arxivId: null,
-        title: "YC W26 Batch: Top Breakout Companies and Trends",
-        summary: "A comprehensive look at the newly launched Y Combinator Winter 2026 batch. Analysis of the 280+ companies reveals a dominant focus on AI developer tools, local-first web applications, and autonomous agent coordination layers.",
-        published: "2026-07-12T10:00:00Z",
-        updated: "2026-07-12T10:00:00Z",
-        authors: ["Y Combinator Research Group"],
-        cats: ["startup-directories", "yc-highlights"],
-        link: "https://www.ycombinator.com/companies",
-        pdfLink: null,
-        source: "YC Startup Directory",
-        customData: {
-          type: "yc-directory",
-          batch: "W26",
-          totalStartups: 285,
-          featuredCompanies: [
-            { name: "OmniParser", description: "Visual agent parsing engine that translates pixel layouts into structured execution coordinates.", sector: "AI Agents", size: "8 people", stage: "Pre-seed", site: "omniparser.io" },
-            { name: "LocalDB", description: "Zero-latency, local-first transactional database engine for collaborative web apps with automatic cloud sync.", sector: "Developer Tools", size: "5 people", stage: "Seed", site: "localdb.dev" },
-            { name: "CellularBio", description: "AI generative modeling of protein folding dynamics under microgravity environments.", sector: "BioTech", size: "12 people", stage: "Seed", site: "cellular.bio" },
-            { name: "LedgerFlow", description: "Autonomous financial ledger reconciliation agents that identify billing anomalies automatically.", sector: "Fintech", size: "6 people", stage: "Pre-seed", site: "ledgerflow.ai" }
-          ]
-        }
-      }
-    ];
+const KEYWORD_MAP = {
+  'agent': ['agent', 'ai', 'machine learning', 'neural', 'model', 'llm', 'intelligence', 'gpt', 'parser', 'perplexity'],
+  'saas': ['saas', 'software', 'spend', 'vendor', 'subscription', 'seat', 'billing', 'linear', 'figma', 'notion', 'slack'],
+  'developer': ['developer', 'tool', 'api', 'database', 'infrastructure', 'wasm', 'code', 'programming', 'posthog', 'sentry', 'retool', 'supabase', 'vercel', 'git'],
+  'robot': ['robot', 'hardware', 'embodied', 'coordination', 'manipulation', 'locomotion', 'humanoid', 'physical', 'sensory', 'tactile', 'figure'],
+  'fintech': ['fintech', 'finance', 'billing', 'spend', 'transaction', 'ledger', 'bank', 'reconciliation', 'payment', 'card'],
+  'bio': ['bio', 'health', 'protein', 'gravity', 'clinical', 'medical', 'cell', 'cellular', 'chemical']
+};
 
-    const SOURCE_TAGS = {
-      'Ramp Vendor Reports': ['tag-ramp', 'Ramp Spend'],
-      'Harmonic Hot 25': ['tag-harmonic', 'Harmonic 25'],
-      'a16z Build': ['tag-a16z', 'a16z Build'],
-      'Founders You Should Know': ['tag-fysk', 'FYSK Pitch'],
-      'Next Play': ['tag-nextplay', 'Next Play'],
-      'YC Startup Directory': ['tag-yc', 'YC Batch'],
-      'Early Days Substack': ['tag-earlydays', 'Early Days']
-    };
+// Main Fetch Feed Controller
+async function fetchFeedData(force = false) {
+  const refreshBtn = document.getElementById('refresh-btn');
+  if (refreshBtn) refreshBtn.classList.add('spinning');
+  
+  const feedContent = document.getElementById('feed-content');
+  if (allFeedItems.length === 0) {
+    feedContent.innerHTML = `
+      <div class="loading-state">
+        <div class="loader-grid">
+          ${Array(8).fill('<div class="loader-cell"></div>').join('')}
+        </div>
+        <div class="loading-text">SYNCING WITH EMBEDDED VENTURE INTELLIGENCE SERVER...</div>
+      </div>`;
+  }
 
-    const KEYWORD_MAP = {
-      'agent': ['agent', 'ai', 'machine learning', 'neural', 'model', 'llm', 'intelligence', 'gpt', 'parser', 'perplexity'],
-      'saas': ['saas', 'software', 'spend', 'vendor', 'subscription', 'seat', 'billing', 'linear', 'figma', 'notion', 'slack'],
-      'developer': ['developer', 'tool', 'api', 'database', 'infrastructure', 'wasm', 'code', 'programming', 'posthog', 'sentry', 'retool', 'supabase', 'vercel', 'git'],
-      'robot': ['robot', 'hardware', 'embodied', 'coordination', 'manipulation', 'locomotion', 'humanoid', 'physical', 'sensory', 'tactile', 'figure'],
-      'fintech': ['fintech', 'finance', 'billing', 'spend', 'transaction', 'ledger', 'bank', 'reconciliation', 'payment', 'card'],
-      'bio': ['bio', 'health', 'protein', 'gravity', 'clinical', 'medical', 'cell', 'cellular', 'chemical']
-    };
-
-    function parseRSSXML(xmlText, sourceName) {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(xmlText, 'application/xml');
-      const items = doc.querySelectorAll('item');
-      const records = [];
+  try {
+    const url = force ? '/api/startup-feed?refresh=true' : '/api/startup-feed';
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+    
+    const result = await response.json();
+    
+    if (result.status === 'success') {
+      allFeedItems = result.data || [];
       
-      items.forEach(item => {
-        const title = item.querySelector('title')?.textContent?.trim() || '';
-        const link = item.querySelector('link')?.textContent?.trim() || '';
-        
-        let summary = '';
-        const descNode = item.querySelector('description');
-        const encodedNode = item.querySelector('encoded') || item.getElementsByTagName('content:encoded')?.[0];
-        if (encodedNode) {
-          summary = encodedNode.textContent.trim();
-        } else if (descNode) {
-          summary = descNode.textContent.trim();
-        }
-        
-        // Strip tags
-        summary = summary.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ');
-        if (summary.length > 300) {
-          summary = summary.substring(0, 300) + '...';
-        }
-        if (!summary) summary = 'No summary available.';
-        
-        const pubDate = item.querySelector('pubDate')?.textContent?.trim() || '';
-        let publishedIso = new Date().toISOString();
-        if (pubDate) {
-          try {
-            publishedIso = new Date(pubDate).toISOString();
-          } catch (_) {}
-        }
-        
-        let creator = item.querySelector('creator')?.textContent?.trim() || 
-                      item.getElementsByTagName('dc:creator')?.[0]?.textContent?.trim() || 
-                      sourceName;
-        
-        let cats = ['substack-insights'];
-        const contentStr = (title + ' ' + summary).toLowerCase();
-        if (contentStr.includes('job') || contentStr.includes('hiring') || contentStr.includes('role') || contentStr.includes('careers') || contentStr.includes('talent')) {
-          cats.push('talent-jobs');
-        }
-        if (contentStr.includes('found') || contentStr.includes('pitch') || contentStr.includes('showcase')) {
-          cats.push('pitch-showcases');
-        }
-
-        records.push({
-          arxivId: null,
-          title,
-          summary,
-          published: publishedIso,
-          updated: publishedIso,
-          authors: [creator],
-          cats,
-          link,
-          pdfLink: null,
-          source: sourceName
-        });
-      });
-      return records;
-    }
-
-    let workingProxyIndex = 0;
-
-    async function tryFetchWithProxy(url, proxyFn, timeoutMs = 8000) {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), timeoutMs);
-      try {
-        const resp = await fetch(proxyFn(url), { signal: controller.signal });
-        clearTimeout(timer);
-        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-        const text = await resp.text();
-        // If allOrigins is used, response is JSON with a content field
-        if (text.trim().startsWith('{')) {
-          const js = JSON.parse(text);
-          if (js.contents) return js.contents;
-        }
-        return text;
-      } catch (e) {
-        clearTimeout(timer);
-        throw e;
-      }
-    }
-
-    async function fetchRSS(feedItem) {
-      const orderedProxies = [
-        ...PROXIES.slice(workingProxyIndex),
-        ...PROXIES.slice(0, workingProxyIndex)
-      ];
-
-      let lastErr;
-      for (let i = 0; i < orderedProxies.length; i++) {
-        try {
-          const text = await tryFetchWithProxy(feedItem.url, orderedProxies[i]);
-          workingProxyIndex = PROXIES.indexOf(orderedProxies[i]);
-          return parseRSSXML(text, feedItem.name);
-        } catch (e) {
-          lastErr = e;
-        }
-      }
-      console.warn(`All proxies failed for ${feedItem.name}. Error: ${lastErr?.message}`);
-      return [];
-    }
-
-    async function fetchFeedData(force = false) {
-      const refreshBtn = document.getElementById('refresh-btn');
-      if (refreshBtn) {
-        refreshBtn.classList.add('spinning');
-        refreshBtn.textContent = 'SYNCING FEEDS...';
-      }
-
-      document.getElementById('feed-content').innerHTML = `
-        <div class="loading-state">
-          <div class="loader-grid">
-            ${Array(8).fill('<div class="loader-cell"></div>').join('')}
-          </div>
-          <div class="loading-text">COMMUNICATING WITH RSS FEEDS THROUGH CORS PROXIES...</div>
-        </div>`;
-
-      try {
-        const results = await Promise.allSettled(STARTUP_RSS_FEEDS.map(f => fetchRSS(f)));
-        
-        let fetchedList = [];
-        results.forEach(r => {
-          if (r.status === 'fulfilled' && r.value.length > 0) {
-            fetchedList = fetchedList.concat(r.value);
-          }
-        });
-
-        // Merge curated data
-        const mergedList = [...CURATED_STARTUP_ITEMS];
-        const seenLinks = new Set(CURATED_STARTUP_ITEMS.map(i => i.link));
-        
-        fetchedList.forEach(item => {
-          if (item.link && !seenLinks.has(item.link)) {
-            seenLinks.add(item.link);
-            mergedList.push(item);
-          }
-        });
-
-        mergedList.sort((a, b) => new Date(b.published) - new Date(a.published));
-        allFeedItems = mergedList;
-
-        updateLastUpdatedTime();
-        updateCategoryCounts();
-        updateStatsPanel();
-        applyFilters();
-
-        if (allFeedItems.length > 0 && !selectedId) {
-          selectFeedItem(allFeedItems[0].link);
-        }
-
-      } catch (err) {
-        console.error('Fetch feed failed:', err);
-        allFeedItems = [...CURATED_STARTUP_ITEMS];
-        applyFilters();
-      } finally {
-        if (refreshBtn) {
-          refreshBtn.classList.remove('spinning');
-          refreshBtn.textContent = 'REFRESH FEED';
-        }
-      }
-    }
-
-    function updateLastUpdatedTime() {
-      const timeStr = new Date().toUTCString().split(' ')[4] + ' UTC';
-      document.getElementById('last-updated').textContent = timeStr;
-    }
-
-    function matchKeyword(item, kw) {
-      const text = (item.title + ' ' + item.summary).toLowerCase();
-      const terms = KEYWORD_MAP[kw] || [kw];
-      return terms.some(term => text.includes(term));
-    }
-
-    function updateCategoryCounts() {
-      document.getElementById('count-all').textContent = allFeedItems.length;
+      // Update metadata and status indicators
+      updateLastUpdatedTime(result.timestamp);
+      updateCacheStatus(result.source);
+      updateCategoryCounts();
+      updateStatsPanel();
+      applyFilters();
       
-      const categories = ['market-reports', 'talent-jobs', 'pitch-showcases', 'startup-directories', 'substack-insights'];
-      categories.forEach(cat => {
-        const count = allFeedItems.filter(item => item.cats.includes(cat)).length;
-        const elId = 'count-' + cat.split('-')[1];
-        const el = document.getElementById(elId);
-        if (el) el.textContent = count;
-      });
+      // Automatically select first item if none is selected
+      if (allFeedItems.length > 0 && !selectedId) {
+        const firstItem = allFeedItems[0];
+        selectFeedItem(firstItem.link);
+      }
+      
+      resetCountdown();
+    } else {
+      throw new Error(result.message || 'Unknown response error');
+    }
+  } catch (err) {
+    console.error('Fetch Feed Failed:', err);
+    feedContent.innerHTML = `
+      <div class="error-state">
+        <div style="font-size: 14px; font-weight: bold; margin-bottom: 8px; color: var(--pink)">⚠ PIPELINE CONNECTION FAILURE</div>
+        <div style="font-size: 11px; color: var(--text-dim); margin-bottom: 16px;">${escapeHtml(err.message)}</div>
+        <button class="open-btn" onclick="fetchFeedData(true)" style="max-width: 200px; margin: 0 auto;">Retry Pipeline Connection</button>
+      </div>`;
+  } finally {
+    if (refreshBtn) refreshBtn.classList.remove('spinning');
+  }
+}
 
-      const keywords = ['agent', 'saas', 'developer', 'robot', 'fintech', 'bio'];
-      keywords.forEach(kw => {
-        const count = allFeedItems.filter(item => matchKeyword(item, kw)).length;
-        const el = document.getElementById('kw-' + kw);
-        if (el) el.textContent = count;
+// Update Clock & Status Timestamps
+function updateLastUpdatedTime(timestampIso) {
+  const dateObj = timestampIso ? new Date(timestampIso) : new Date();
+  const timeStr = dateObj.toUTCString().split(' ')[4] + ' UTC';
+  const el = document.getElementById('last-updated');
+  if (el) el.textContent = timeStr;
+}
+
+// Update Cache Status Indicators
+function updateCacheStatus(sourceType) {
+  const cacheVal = document.getElementById('stat-cache-status');
+  if (!cacheVal) return;
+  if (sourceType === 'cache' || sourceType === 'cache_retained') {
+    cacheVal.textContent = 'CACHED';
+    cacheVal.style.color = 'var(--blue)';
+  } else {
+    cacheVal.textContent = 'FRESH';
+    cacheVal.style.color = 'var(--cyan)';
+  }
+}
+
+// Check if content matches keyword based on mapped terms
+function matchKeyword(item, kw) {
+  const text = (item.title + ' ' + item.summary).toLowerCase();
+  const terms = KEYWORD_MAP[kw] || [kw];
+  return terms.some(term => text.includes(term));
+}
+
+// Update counts on the left sidebar categories
+function updateCategoryCounts() {
+  // Total
+  const countAllEl = document.getElementById('count-all');
+  if (countAllEl) countAllEl.textContent = allFeedItems.length;
+  
+  // Specific Categories
+  const categories = ['market-reports', 'talent-jobs', 'pitch-showcases', 'startup-directories', 'substack-insights'];
+  categories.forEach(cat => {
+    const count = allFeedItems.filter(item => item.cats.includes(cat)).length;
+    const elId = 'count-' + cat.split('-')[1];
+    const el = document.getElementById(elId);
+    if (el) el.textContent = count;
+  });
+
+  // Keyword counts
+  const keywords = ['agent', 'saas', 'developer', 'robot', 'fintech', 'bio'];
+  keywords.forEach(kw => {
+    const count = allFeedItems.filter(item => matchKeyword(item, kw)).length;
+    const el = document.getElementById('kw-' + kw);
+    if (el) el.textContent = count;
+  });
+}
+
+// Update Status Bar Values
+function updateStatsPanel() {
+  const countEl = document.getElementById('stat-count');
+  if (countEl) countEl.textContent = allFeedItems.length;
+  const subEl = document.getElementById('stat-sub');
+  if (subEl) subEl.textContent = `Aggregated Records`;
+  
+  if (allFeedItems.length > 0) {
+    const latestItem = allFeedItems[0];
+    const latestEl = document.getElementById('stat-latest');
+    if (latestEl) latestEl.textContent = formatDateRelative(latestItem.published);
+  }
+}
+
+// Filter Controller
+function applyFilters() {
+  let items = [...allFeedItems];
+
+  // 0. Time Window Filter
+  if (activeTimeWindow !== 'all') {
+    const now = new Date();
+    const cutoffDate = new Date();
+    const days = parseInt(activeTimeWindow);
+    if (!isNaN(days)) {
+      cutoffDate.setDate(now.getDate() - days);
+      items = items.filter(item => {
+        const pubDate = new Date(item.published);
+        return !isNaN(pubDate) && pubDate >= cutoffDate;
       });
     }
+  }
 
-    function updateStatsPanel() {
-      document.getElementById('stat-count').textContent = allFeedItems.length;
-      document.getElementById('stat-sub').textContent = `Loaded Items`;
-      
-      if (allFeedItems.length > 0) {
-        const latestItem = allFeedItems[0];
-        document.getElementById('stat-latest').textContent = formatDateRelative(latestItem.published);
-      }
+  // 1. Category Filter
+  if (activeCategory !== 'all') {
+    items = items.filter(item => item.cats.includes(activeCategory));
+  }
+
+  // 2. Keyword Filter
+  if (activeKeyword) {
+    items = items.filter(item => matchKeyword(item, activeKeyword));
+  }
+
+  // 3. Search Query Filter
+  if (searchQuery.trim()) {
+    const q = searchQuery.toLowerCase().trim();
+    items = items.filter(item => {
+      const titleMatch = item.title.toLowerCase().includes(q);
+      const summaryMatch = item.summary.toLowerCase().includes(q);
+      const authorMatch = item.authors.some(auth => auth.toLowerCase().includes(q));
+      return titleMatch || summaryMatch || authorMatch;
+    });
+  }
+
+  filteredFeedItems = items;
+
+  // Update Stats UI
+  const activeLabel = activeKeyword ? activeKeyword.toUpperCase() : (activeCategory === 'all' ? 'ALL SOURCES' : activeCategory.toUpperCase().replace('-', ' '));
+  const filterValEl = document.getElementById('stat-filter');
+  if (filterValEl) filterValEl.textContent = activeLabel;
+  const filteredEl = document.getElementById('stat-filtered');
+  if (filteredEl) filteredEl.textContent = `Showing ${filteredFeedItems.length} matching`;
+
+  renderFeedList();
+  if (activeView === 'chart') {
+    renderTrendChart();
+  }
+}
+
+// Render the feed cards
+function renderFeedList() {
+  const container = document.getElementById('feed-content');
+  if (!container) return;
+  
+  if (filteredFeedItems.length === 0) {
+    container.innerHTML = `
+      <div class="no-results">
+        NO PIPELINE RECORDS MATCHED YOUR FILTER CRITERIA
+      </div>`;
+    return;
+  }
+
+  const html = filteredFeedItems.map((item, idx) => {
+    const [tagClass, label] = SOURCE_TAGS[item.source] || ['tag-general', item.source];
+    
+    // Extra category tags mapping
+    const extraCats = item.cats.filter(c => c !== 'substack-insights' && c !== 'market-reports');
+    const extraTagsHtml = extraCats.map(c => {
+      if (c === 'talent-jobs') return `<span class="paper-tag tag-nextplay">Jobs</span>`;
+      if (c === 'pitch-showcases') return `<span class="paper-tag tag-yc">Pitches</span>`;
+      return '';
+    }).join('');
+
+    const uniqueId = item.link;
+    const isSelected = uniqueId === selectedId;
+
+    return `
+      <div class="paper-card ${isSelected ? 'selected' : ''}" 
+           onclick="selectFeedItem('${uniqueId}')"
+           style="animation-delay: ${idx * 0.02}s">
+        <div class="paper-meta">
+          <span class="paper-id">${item.source.toUpperCase()}</span>
+          <span class="paper-tag ${tagClass}">${label}</span>
+          ${extraTagsHtml}
+          <span class="paper-date">${formatDateRelative(item.published)}</span>
+        </div>
+        <div class="paper-title">${escapeHtml(item.title)}</div>
+        <div class="paper-authors">${escapeHtml(item.authors.slice(0, 3).join(', '))}${item.authors.length > 3 ? ` +${item.authors.length - 3}` : ''}</div>
+        <div class="paper-abstract">${escapeHtml(item.summary.replace(/<[^>]*>/g, ''))}</div>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = html;
+}
+
+// Renders the specific interactive custom modules in detail pane
+function selectFeedItem(uniqueId) {
+  selectedId = uniqueId;
+  
+  // Highlight card in list
+  document.querySelectorAll('.paper-card').forEach(card => {
+    const clickAttr = card.getAttribute('onclick');
+    if (clickAttr && clickAttr.includes(uniqueId)) {
+      card.classList.add('selected');
+    } else {
+      card.classList.remove('selected');
     }
+  });
 
-    function applyFilters() {
-      let items = [...allFeedItems];
+  const item = allFeedItems.find(i => i.link === uniqueId);
+  if (!item) return;
 
-      if (activeTimeWindow !== 'all') {
-        const now = new Date();
-        const cutoffDate = new Date();
-        const days = parseInt(activeTimeWindow);
-        if (!isNaN(days)) {
-          cutoffDate.setDate(now.getDate() - days);
-          items = items.filter(item => {
-            const pubDate = new Date(item.published);
-            return !isNaN(pubDate) && pubDate >= cutoffDate;
-          });
-        }
-      }
+  const detailContainer = document.getElementById('detail-content');
+  if (!detailContainer) return;
+  
+  const [tagClass, label] = SOURCE_TAGS[item.source] || ['tag-general', item.source];
+  const tagsHtml = `<span class="paper-tag ${tagClass}">${label}</span>` + 
+    item.cats.map(c => {
+      if (c === 'market-reports') return `<span class="paper-tag tag-ramp">Report</span>`;
+      if (c === 'talent-jobs') return `<span class="paper-tag tag-nextplay">Talent / Jobs</span>`;
+      if (c === 'pitch-showcases') return `<span class="paper-tag tag-yc">Pitch</span>`;
+      if (c === 'startup-directories') return `<span class="paper-tag tag-yc">Directory</span>`;
+      return '';
+    }).filter(Boolean).join('');
 
-      if (activeCategory !== 'all') {
-        items = items.filter(item => item.cats.includes(activeCategory));
-      }
-
-      if (activeKeyword) {
-        items = items.filter(item => matchKeyword(item, activeKeyword));
-      }
-
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase().trim();
-        items = items.filter(item => {
-          return item.title.toLowerCase().includes(q) || 
-                 item.summary.toLowerCase().includes(q) || 
-                 item.authors.some(auth => auth.toLowerCase().includes(q));
-        });
-      }
-
-      filteredFeedItems = items;
-
-      const activeLabel = activeKeyword ? activeKeyword.toUpperCase() : (activeCategory === 'all' ? 'ALL SOURCES' : activeCategory.toUpperCase().replace('-', ' '));
-      document.getElementById('stat-filter').textContent = activeLabel;
-      document.getElementById('stat-filtered').textContent = `Showing ${filteredFeedItems.length} matching`;
-
-      renderFeedList();
-      if (activeView === 'chart') {
-        renderTrendChart();
-      }
-    }
-
-    function renderFeedList() {
-      const container = document.getElementById('feed-content');
-      if (!container) return;
-      
-      if (filteredFeedItems.length === 0) {
-        container.innerHTML = `<div class="no-results">NO PIPELINE RECORDS MATCHED</div>`;
-        return;
-      }
-
-      const html = filteredFeedItems.map((item, idx) => {
-        const [tagClass, label] = SOURCE_TAGS[item.source] || ['tag-general', item.source];
-        const uniqueId = item.link;
-        const isSelected = uniqueId === selectedId;
-
-        return `
-          <div class="paper-card ${isSelected ? 'selected' : ''}" 
-               onclick="selectFeedItem('${uniqueId}')"
-               style="animation-delay: ${idx * 0.02}s">
-            <div class="paper-meta">
-              <span class="paper-id">${item.source.toUpperCase()}</span>
-              <span class="paper-tag ${tagClass}">${label}</span>
-              <span class="paper-date">${formatDateRelative(item.published)}</span>
+  // Generate dynamic custom rendering content based on data payload
+  let customHtml = '';
+  if (item.customData) {
+    const data = item.customData;
+    if (data.type === 'ramp-spend') {
+      customHtml = `
+        <div class="detail-section-label">Spend Metrics &amp; Growth</div>
+        <div class="ramp-spend-container">
+          <div class="ramp-metric-row">
+            <div class="ramp-metric-card">
+              <div class="ramp-metric-num">${data.totalSpendGrowth}</div>
+              <div class="ramp-metric-label">Spend Growth</div>
             </div>
-            <div class="paper-title">${escapeHtml(item.title)}</div>
-            <div class="paper-authors">${escapeHtml(item.authors.slice(0, 3).join(', '))}</div>
-            <div class="paper-abstract">${escapeHtml(item.summary.replace(/<[^>]*>/g, ''))}</div>
+            <div class="ramp-metric-card">
+              <div class="ramp-metric-num">${data.duplicateReduction}</div>
+              <div class="ramp-metric-label">Dupes Reduction</div>
+            </div>
+            <div class="ramp-metric-card">
+              <div class="ramp-metric-num">${data.avgSeatPrice}</div>
+              <div class="ramp-metric-label">Avg Seat Cost</div>
+            </div>
           </div>
-        `;
-      }).join('');
+          
+          <div class="ramp-chart-title">Software Categories Market Share</div>
+          ${data.categoryShare.map(cat => `
+            <div class="ramp-bar-row">
+              <div class="ramp-bar-meta">
+                <span class="ramp-bar-label">${escapeHtml(cat.name)}</span>
+                <span class="ramp-bar-val">${cat.share}%</span>
+              </div>
+              <div class="ramp-bar-bg">
+                <div class="ramp-bar-fill" style="width: ${cat.share}%"></div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
 
-      container.innerHTML = html;
-    }
+        <div class="detail-section-label">Fastest Growing Tech Vendors</div>
+        <div class="newsletter-jobs-list" style="margin-bottom: 20px;">
+          ${data.growthVendors.map(vendor => `
+            <div class="newsletter-job-item">
+              <div class="n-job-title" style="color: var(--pink)">${escapeHtml(vendor.name)}</div>
+              <div class="n-job-meta">
+                Category: <span style="color: var(--text-dim)">${escapeHtml(vendor.category)}</span> · Growth: <span style="color: var(--green); font-weight: bold;">+${vendor.growth}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    } else if (data.type === 'harmonic-hot25') {
+      customHtml = `
+        <div class="detail-section-label">Venture Index Metrics</div>
+        <div class="ramp-spend-container">
+          <div class="ramp-metric-row" style="border: none; padding-bottom: 0;">
+            <div class="ramp-metric-card">
+              <div class="ramp-metric-num" style="color: var(--cyan)">${data.quarter}</div>
+              <div class="ramp-metric-label">Release Batch</div>
+            </div>
+            <div class="ramp-metric-card">
+              <div class="ramp-metric-num" style="color: var(--cyan)">${data.avgGrowthRate}</div>
+              <div class="ramp-metric-label">Avg Velocity</div>
+            </div>
+            <div class="ramp-metric-card">
+              <div class="ramp-metric-num" style="color: var(--cyan)">${data.totalFundingRaised}</div>
+              <div class="ramp-metric-label">Total Raised</div>
+            </div>
+          </div>
+        </div>
 
-    function selectFeedItem(uniqueId) {
-      selectedId = uniqueId;
-      
-      document.querySelectorAll('.paper-card').forEach(card => {
-        const clickAttr = card.getAttribute('onclick');
-        if (clickAttr && clickAttr.includes(uniqueId)) {
-          card.classList.add('selected');
-        } else {
-          card.classList.remove('selected');
-        }
-      });
+        <div class="detail-section-label">Harmonic Hot 25 Standout Rankings</div>
+        <div class="harmonic-hot25-container">
+          <table class="harmonic-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Company</th>
+                <th>Sector</th>
+                <th>Growth Velocity</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${data.startups.map(s => `
+                <tr>
+                  <td class="h-rank">#${s.rank}</td>
+                  <td class="h-name">
+                    <span style="display: block;">${escapeHtml(s.name)}</span>
+                    <a href="https://${s.site}" target="_blank" style="color: var(--cyan); font-size: 8px; text-decoration: none; margin-right: 8px;">${escapeHtml(s.site)} ↗</a>
+                    <button class="tracker-add-btn" style="font-size: 8px; padding: 1px 4px; line-height: 1; display: inline-block;" onclick="addStartupToTracker('${escapeHtml(s.name)}', '${escapeHtml(s.site)}', 'Harmonic Q2 2026', '${escapeHtml(s.sector)}')">+ track</button>
+                  </td>
+                  <td class="h-sector">${escapeHtml(s.sector)}</td>
+                  <td class="h-growth">
+                    <div class="h-growth-wrap">
+                      <span class="h-growth-num">+${s.growth}%</span>
+                      <div class="h-progress">
+                        <div class="h-progress-fill" style="width: ${Math.min(100, s.growth)}%; background: ${s.growth > 80 ? 'var(--pink)' : (s.growth > 50 ? 'var(--cyan)' : 'var(--green)')}"></div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    } else if (data.type === 'yc-directory') {
+      customHtml = `
+        <div class="detail-section-label">Batch Aggregate Data</div>
+        <div class="ramp-spend-container">
+          <div class="ramp-metric-row" style="border: none; padding-bottom: 0;">
+            <div class="ramp-metric-card">
+              <div class="ramp-metric-num" style="color: var(--green)">${data.batch}</div>
+              <div class="ramp-metric-label">YC Batch</div>
+            </div>
+            <div class="ramp-metric-card">
+              <div class="ramp-metric-num" style="color: var(--green)">${data.totalStartups}</div>
+              <div class="ramp-metric-label">Total Startups</div>
+            </div>
+            <div class="ramp-metric-card">
+              <div class="ramp-metric-num" style="color: var(--green)">Live</div>
+              <div class="ramp-metric-label">Hiring Status</div>
+            </div>
+          </div>
+        </div>
 
-      const item = allFeedItems.find(i => i.link === uniqueId);
-      if (!item) return;
-
-      const detailContainer = document.getElementById('detail-content');
-      
-      const [tagClass, label] = SOURCE_TAGS[item.source] || ['tag-general', item.source];
-      const tagsHtml = `<span class="paper-tag ${tagClass}">${label}</span>`;
-
-      let customHtml = '';
-      if (item.customData) {
-        const data = item.customData;
-        if (data.type === 'ramp-spend') {
-          customHtml = `
-            <div class="detail-section-label">Spend Metrics &amp; Growth</div>
-            <div class="ramp-spend-container">
-              <div class="ramp-metric-row">
-                <div class="ramp-metric-card">
-                  <div class="ramp-metric-num">${data.totalSpendGrowth}</div>
-                  <div class="ramp-metric-label">Spend Growth</div>
-                </div>
-                <div class="ramp-metric-card">
-                  <div class="ramp-metric-num">${data.duplicateReduction}</div>
-                  <div class="ramp-metric-label">Dupes Reduction</div>
-                </div>
-                <div class="ramp-metric-card">
-                  <div class="ramp-metric-num">${data.avgSeatPrice}</div>
-                  <div class="ramp-metric-label">Avg Seat Cost</div>
+        <div class="detail-section-label">Curated Batch Highlights</div>
+        <div class="yc-directory-container">
+          ${data.featuredCompanies.map(c => `
+            <div class="yc-startup-card">
+              <div class="yc-startup-header">
+                <span class="yc-startup-name">${escapeHtml(c.name)}</span>
+                <span class="yc-startup-stage">${escapeHtml(c.stage)}</span>
+              </div>
+              <div class="yc-startup-desc">${escapeHtml(c.description)}</div>
+              <div class="yc-startup-footer">
+                <span class="yc-startup-meta">Sector: <strong style="color: var(--text-dim)">${escapeHtml(c.sector)}</strong> · Size: ${escapeHtml(c.size)}</span>
+                <div style="display: flex; gap: 6px; align-items: center;">
+                  <button class="tracker-add-btn" style="font-size: 9px; padding: 2px 8px; border: 1px solid var(--green-mid); background: var(--green-dim); color: var(--green);" onclick="addStartupToTracker('${escapeHtml(c.name)}', '${escapeHtml(c.site)}', 'YC ${data.batch}', '${escapeHtml(c.description)}')">Track</button>
+                  <a href="https://${c.site}" target="_blank" class="yc-startup-link">Apply ↗</a>
                 </div>
               </div>
-              
-              <div class="ramp-chart-title">Software Categories Market Share</div>
-              ${data.categoryShare.map(cat => `
-                <div class="ramp-bar-row">
-                  <div class="ramp-bar-meta">
-                    <span class="ramp-bar-label">${escapeHtml(cat.name)}</span>
-                    <span class="ramp-bar-val">${cat.share}%</span>
-                  </div>
-                  <div class="ramp-bar-bg">
-                    <div class="ramp-bar-fill" style="width: ${cat.share}%"></div>
-                  </div>
-                </div>
-              `).join('')}
             </div>
-          `;
-        } else if (data.type === 'harmonic-hot25') {
-          customHtml = `
-            <div class="detail-section-label">Harmonic Hot 25 Standout Rankings</div>
-            <div class="harmonic-hot25-container">
-              <table class="harmonic-table">
-                <thead>
-                  <tr>
-                    <th>Rank</th>
-                    <th>Company</th>
-                    <th>Sector</th>
-                    <th>Growth Velocity</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${data.startups.map(s => `
-                    <tr>
-                      <td class="h-rank">#${s.rank}</td>
-                      <td class="h-name">${escapeHtml(s.name)}</td>
-                      <td class="h-sector">${escapeHtml(s.sector)}</td>
-                      <td class="h-growth">
-                        <div class="h-growth-wrap">
-                          <span class="h-growth-num">+${s.growth}%</span>
-                        </div>
-                      </td>
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
-            </div>
-          `;
-        } else if (data.type === 'yc-directory') {
-          customHtml = `
-            <div class="detail-section-label">Curated Batch Highlights</div>
-            <div class="yc-directory-container">
-              ${data.featuredCompanies.map(c => `
-                <div class="yc-startup-card">
-                  <div class="yc-startup-header">
-                    <span class="yc-startup-name">${escapeHtml(c.name)}</span>
-                    <span class="yc-startup-stage">${escapeHtml(c.stage)}</span>
-                  </div>
-                  <div class="yc-startup-desc">${escapeHtml(c.description)}</div>
-                </div>
-              `).join('')}
-            </div>
-          `;
-        }
-      }
-
-      detailContainer.innerHTML = `
-        <div class="detail-body">
-          <div class="detail-tags">${tagsHtml}</div>
-          <div class="detail-title">${escapeHtml(item.title)}</div>
-          <div class="detail-authors">${escapeHtml(item.authors.join(' · '))}</div>
-          
-          <div class="detail-date-row">
-            <div class="detail-date-cell">
-              <div class="label">PUBLISHED / ACQUIRED</div>
-              <div class="value">${formatDateFull(item.published)}</div>
-            </div>
-            <div class="detail-date-cell">
-              <div class="label">INDEX SOURCE</div>
-              <div class="value" style="color: var(--cyan); font-weight: bold;">${escapeHtml(item.source)}</div>
-            </div>
-          </div>
-
-          ${customHtml}
-
-          <div class="detail-section-label">Abstract / Overview</div>
-          <div class="detail-abstract">${item.summary}</div>
-
-          <div class="action-buttons">
-            <a href="${item.link}" target="_blank" class="open-btn">↗ OPEN ORIGINAL RELEASE</a>
-          </div>
+          `).join('')}
         </div>
       `;
     }
-
-    function setCategory(cat, el) {
-      activeCategory = cat;
-      activeKeyword = null;
-      document.querySelectorAll('.sidebar [data-cat]').forEach(e => e.classList.remove('active'));
-      document.querySelectorAll('.sidebar [data-kw]').forEach(e => e.classList.remove('active'));
-      el.classList.add('active');
-      applyFilters();
-    }
-
-    function setKeyword(kw, el) {
-      if (activeKeyword === kw) {
-        activeKeyword = null;
-        el.classList.remove('active');
-      } else {
-        activeKeyword = kw;
-        activeCategory = 'all';
-        document.querySelectorAll('.sidebar [data-cat]').forEach(e => e.classList.remove('active'));
-        document.querySelectorAll('.sidebar [data-kw]').forEach(e => e.classList.remove('active'));
-        const allTopicsEl = document.querySelector('.sidebar [data-cat="all"]');
-        if (allTopicsEl) allTopicsEl.classList.add('active');
-        el.classList.add('active');
-      }
-      applyFilters();
-    }
-
-    function onSearch() {
-      searchQuery = document.getElementById('search-input').value;
-      applyFilters();
-    }
-
-    function formatDateFull(isoString) {
-      if (!isoString) return '—';
-      const d = new Date(isoString);
-      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    }
-
-    function formatDateRelative(isoString) {
-      if (!isoString) return '—';
-      const d = new Date(isoString);
-      const now = new Date();
-      const diff = now - d;
-      const hours = Math.floor(diff / 3600000);
-      const days = Math.floor(diff / 86400000);
-      if (hours < 24) return `${hours}h ago`;
-      if (days < 7) return `${days}d ago`;
-      return formatDateFull(isoString);
-    }
-
-    function escapeHtml(str) {
-      return (str || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
-    // Chart logic
-    let activeView = 'feed';
-    let trendChartInstance = null;
-    let maxTrendChartInstance = null;
-    const sourcesList = ['Ramp Vendor Reports', 'Harmonic Hot 25', 'a16z Build', 'Founders You Should Know', 'Next Play', 'YC Startup Directory', 'Early Days Substack'];
-    const sourceChartLabels = {'Ramp Vendor Reports': 'Ramp', 'Harmonic Hot 25': 'Harmonic', 'a16z Build': 'a16z', 'Founders You Should Know': 'FYSK', 'Next Play': 'Next Play', 'YC Startup Directory': 'YC', 'Early Days Substack': 'Early Days'};
-    let chartActiveSources = ['a16z Build', 'Next Play', 'Early Days Substack'];
-
-    function switchView(view) {
-      activeView = view;
-      const feedContent = document.getElementById('feed-content');
-      const chartContainer = document.getElementById('chart-view-container');
-      const feedTabBtn = document.getElementById('tab-btn-feed');
-      const chartTabBtn = document.getElementById('tab-btn-chart');
-
-      if (view === 'feed') {
-        feedContent.style.display = 'block';
-        chartContainer.style.display = 'none';
-        feedTabBtn.classList.add('active');
-        chartTabBtn.classList.remove('active');
-      } else {
-        feedContent.style.display = 'none';
-        chartContainer.style.display = 'flex';
-        feedTabBtn.classList.remove('active');
-        chartTabBtn.classList.add('active');
-        renderTrendChart();
+  } else {
+    // If it's a Substack RSS feed, we can try to extract structured jobs/pitch lists if possible
+    const summaryLower = item.summary.toLowerCase();
+    if (summaryLower.includes('role') || summaryLower.includes('advisor') || summaryLower.includes('co-founder') || summaryLower.includes('opportunity')) {
+      // Try to parse some jobs out of the HTML content
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = item.summary;
+      const listItems = Array.from(tempDiv.querySelectorAll('li')).slice(0, 6);
+      if (listItems.length > 0) {
+        customHtml = `
+          <div class="detail-section-label">Extracted Role Openings / Highlights</div>
+          <div class="newsletter-jobs-list">
+            ${listItems.map(li => {
+              const text = li.textContent.trim();
+              let title = text.split('–')[0] || text.split('-')[0] || text;
+              let description = text.replace(title, '').replace(/^[–\-:\s]+/, '');
+              if (!description) {
+                description = 'Open Opportunity. Click source link to apply.';
+              }
+              return `
+                <div class="newsletter-job-item">
+                  <div class="n-job-title">${escapeHtml(title.substring(0, 60))}</div>
+                  <div class="n-job-meta" style="line-height: 1.4;">
+                    ${escapeHtml(description.substring(0, 150))}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
       }
     }
+  }
 
-    function getMonday(d) {
-      d = new Date(d);
-      const day = d.getDay();
-      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-      const monday = new Date(d.setDate(diff));
-      monday.setHours(0, 0, 0, 0);
-      return monday;
+  detailContainer.innerHTML = `
+    <div class="detail-body">
+      <div class="detail-tags">${tagsHtml}</div>
+      <div class="detail-title">${escapeHtml(item.title)}</div>
+      <div class="detail-authors">${escapeHtml(item.authors.join(' · '))}</div>
+      
+      <div class="detail-date-row">
+        <div class="detail-date-cell">
+          <div class="label">PUBLISHED / ACQUIRED</div>
+          <div class="value">${formatDateFull(item.published)}</div>
+        </div>
+        <div class="detail-date-cell">
+          <div class="label">INDEX SOURCE</div>
+          <div class="value" style="color: var(--cyan); font-weight: bold;">${escapeHtml(item.source)}</div>
+        </div>
+      </div>
+
+      ${customHtml}
+
+      <div class="detail-section-label">Abstract / Overview</div>
+      <div class="detail-abstract">${item.summary}</div>
+
+      <div class="action-buttons">
+        <a href="${item.link}" target="_blank" class="open-btn">↗ OPEN ORIGINAL RELEASE</a>
+        <button class="add-tracker-import-btn" onclick="importStartupToTracker('${escapeHtml(item.title)}', '${item.link}', '${escapeHtml(item.source)}')">✚ ADD ARTICLE TO PIPELINE</button>
+        <button class="abs-btn" onclick="shareItem('${escapeHtml(item.title)}')">⎋ SHARE DEAL INTEL</button>
+      </div>
+    </div>
+  `;
+}
+
+function shareItem(title) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(`Venture Intel: "${title}"`);
+    alert('Venture Intel title copied to clipboard!');
+  } else {
+    alert(`Deal Intel: "${title}"`);
+  }
+}
+
+// Category selection
+function setCategory(cat, el) {
+  activeCategory = cat;
+  activeKeyword = null; // reset keyword filter when switching categories
+  
+  document.querySelectorAll('.sidebar [data-cat]').forEach(e => e.classList.remove('active'));
+  document.querySelectorAll('.sidebar [data-kw]').forEach(e => e.classList.remove('active'));
+  
+  el.classList.add('active');
+  
+  const label = cat === 'all' ? 'LATEST ENTRIES' : `SOURCE TYPE: ${cat.toUpperCase().replace('-', ' ')}`;
+  const titleEl = document.getElementById('feed-title-label');
+  if (titleEl) titleEl.textContent = label;
+  
+  applyFilters();
+}
+
+// Keyword selection
+function setKeyword(kw, el) {
+  if (activeKeyword === kw) {
+    activeKeyword = null;
+    el.classList.remove('active');
+  } else {
+    activeKeyword = kw;
+    activeCategory = 'all'; // reset category filter
+    
+    document.querySelectorAll('.sidebar [data-cat]').forEach(e => e.classList.remove('active'));
+    document.querySelectorAll('.sidebar [data-kw]').forEach(e => e.classList.remove('active'));
+    
+    const allTopicsEl = document.querySelector('.sidebar [data-cat="all"]');
+    if (allTopicsEl) allTopicsEl.classList.add('active');
+    
+    el.classList.add('active');
+  }
+  
+  applyFilters();
+}
+
+// Search callback
+function onSearch() {
+  searchQuery = document.getElementById('search-input').value;
+  applyFilters();
+}
+
+// Date Formatters
+function formatDateFull(isoString) {
+  if (!isoString) return '—';
+  const d = new Date(isoString);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function formatDateRelative(isoString) {
+  if (!isoString) return '—';
+  const d = new Date(isoString);
+  const now = new Date();
+  const diff = now - d;
+  
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
+  
+  if (hours < 0) return 'Just now';
+  if (hours < 1) return 'Just now';
+  if (hours < 24) return `${hours}h ago`;
+  if (days < 7) return `${days}d ago`;
+  
+  return formatDateFull(isoString);
+}
+
+// HTML Escaping Utility
+function escapeHtml(str) {
+  return (str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+// Countdown Clock Management
+function resetCountdown() {
+  countdownSeconds = CACHE_DURATION_SEC;
+  if (countdownTimer) clearInterval(countdownTimer);
+  
+  countdownTimer = setInterval(() => {
+    countdownSeconds--;
+    if (countdownSeconds <= 0) {
+      clearInterval(countdownTimer);
+      fetchFeedData(false); // background fetch
+    } else {
+      const minutes = Math.floor(countdownSeconds / 60);
+      const secs = countdownSeconds % 60;
+      const el = document.getElementById('stat-next');
+      if (el) el.textContent = `countdown: ${minutes}m ${secs}s`;
+    }
+  }, 1000);
+}
+
+// Initialization
+document.addEventListener('DOMContentLoaded', () => {
+  loadTrackerData();
+  fetchFeedData(false);
+});
+
+// Chart View & Data Controllers
+let activeView = 'feed';
+let trendChartInstance = null;
+let maxTrendChartInstance = null;
+
+const sourcesList = [
+  'Ramp Vendor Reports',
+  'Harmonic Hot 25',
+  'a16z Build',
+  'Founders You Should Know',
+  'Next Play',
+  'YC Startup Directory',
+  'Early Days Substack'
+];
+
+const sourceChartLabels = {
+  'Ramp Vendor Reports': 'Ramp reports',
+  'Harmonic Hot 25': 'Harmonic 25',
+  'a16z Build': 'a16z Build',
+  'Founders You Should Know': 'FYSK Pitches',
+  'Next Play': 'Next Play',
+  'YC Startup Directory': 'YC batch list',
+  'Early Days Substack': 'Early Days Substack'
+};
+
+let chartActiveSources = ['a16z Build', 'Next Play', 'Early Days Substack']; // Default active datasets
+
+function switchView(view) {
+  activeView = view;
+  
+  // Containers
+  const feedViewWrap = document.getElementById('feed-view-container');
+  const chartContainer = document.getElementById('chart-view-container');
+  const trackerContainer = document.getElementById('tracker-workspace-container');
+  
+  // Sidebars
+  const discoverySidebar = document.getElementById('sidebar-discovery-views');
+  const trackerSidebar = document.getElementById('sidebar-tracker-views');
+  
+  // Right Sidebar (details)
+  const discoveryDetail = document.getElementById('detail-discovery-views');
+  const trackerDetail = document.getElementById('detail-tracker-views');
+  
+  // Tabs
+  const feedTabBtn = document.getElementById('tab-btn-feed');
+  const chartTabBtn = document.getElementById('tab-btn-chart');
+  const trackerTabBtn = document.getElementById('tab-btn-tracker');
+
+  // Reset active tab styles
+  [feedTabBtn, chartTabBtn, trackerTabBtn].forEach(btn => {
+    if (btn) btn.classList.remove('active');
+  });
+
+  if (view === 'feed') {
+    if (feedViewWrap) feedViewWrap.style.display = 'block';
+    if (chartContainer) chartContainer.style.display = 'none';
+    if (trackerContainer) trackerContainer.style.display = 'none';
+    
+    if (discoverySidebar) discoverySidebar.style.display = 'block';
+    if (trackerSidebar) trackerSidebar.style.display = 'none';
+    
+    if (discoveryDetail) discoveryDetail.style.display = 'flex';
+    if (trackerDetail) trackerDetail.style.display = 'none';
+    
+    if (feedTabBtn) feedTabBtn.classList.add('active');
+    
+    updateStatsPanel();
+  } else if (view === 'chart') {
+    if (feedViewWrap) feedViewWrap.style.display = 'none';
+    if (chartContainer) chartContainer.style.display = 'flex';
+    if (trackerContainer) trackerContainer.style.display = 'none';
+    
+    if (discoverySidebar) discoverySidebar.style.display = 'block';
+    if (trackerSidebar) trackerSidebar.style.display = 'none';
+    
+    if (discoveryDetail) discoveryDetail.style.display = 'flex';
+    if (trackerDetail) trackerDetail.style.display = 'none';
+    
+    if (chartTabBtn) chartTabBtn.classList.add('active');
+    renderTrendChart();
+  } else if (view === 'tracker') {
+    if (feedViewWrap) feedViewWrap.style.display = 'none';
+    if (chartContainer) chartContainer.style.display = 'none';
+    if (trackerContainer) trackerContainer.style.display = 'flex';
+    
+    if (discoverySidebar) discoverySidebar.style.display = 'none';
+    if (trackerSidebar) trackerSidebar.style.display = 'block';
+    
+    if (discoveryDetail) discoveryDetail.style.display = 'none';
+    if (trackerDetail) trackerDetail.style.display = 'block';
+    
+    if (trackerTabBtn) trackerTabBtn.classList.add('active');
+    
+    renderTrackerList();
+    renderTrackerWorkspace();
+    updateTrackerStats();
+    
+    // Update stats bar active filter
+    document.getElementById('stat-filter').textContent = 'PSYCHO JOB PIPELINE';
+    document.getElementById('stat-filtered').textContent = `Tracking ${trackedStartups.length} startups`;
+  }
+}
+
+function getMonday(d) {
+  d = new Date(d);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(d.setDate(diff));
+  monday.setHours(0, 0, 0, 0);
+  return monday;
+}
+
+function generateChartData() {
+  const weeksMap = {};
+
+  filteredFeedItems.forEach(item => {
+    const pubDate = new Date(item.published);
+    if (isNaN(pubDate)) return;
+    const mon = getMonday(pubDate);
+    const monKey = mon.toISOString().split('T')[0];
+
+    if (!weeksMap[monKey]) {
+      weeksMap[monKey] = {
+        date: mon,
+        counts: {}
+      };
+      sourcesList.forEach(s => {
+        weeksMap[monKey].counts[s] = 0;
+      });
     }
 
-    function generateChartData() {
-      const weeksMap = {};
-      filteredFeedItems.forEach(item => {
-        const pubDate = new Date(item.published);
-        if (isNaN(pubDate)) return;
-        const mon = getMonday(pubDate);
-        const monKey = mon.toISOString().split('T')[0];
-        if (!weeksMap[monKey]) {
-          weeksMap[monKey] = { date: mon, counts: {} };
-          sourcesList.forEach(s => { weeksMap[monKey].counts[s] = 0; });
+    if (weeksMap[monKey].counts[item.source] !== undefined) {
+      weeksMap[monKey].counts[item.source]++;
+    }
+  });
+
+  const sortedWeekKeys = Object.keys(weeksMap).sort();
+  
+  const labels = sortedWeekKeys.map(k => {
+    const d = weeksMap[k].date;
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' });
+  });
+
+  const datasets = {};
+  sourcesList.forEach(s => {
+    datasets[s] = [];
+  });
+
+  sortedWeekKeys.forEach(k => {
+    const counts = weeksMap[k].counts;
+    sourcesList.forEach(s => {
+      datasets[s].push(counts[s]);
+    });
+  });
+
+  return { labels, datasets };
+}
+
+function renderCustomLegendPills() {
+  const containers = [
+    document.getElementById('chart-legend-pills'),
+    document.getElementById('modal-chart-legend-pills')
+  ];
+
+  containers.forEach(container => {
+    if (!container) return;
+
+    const pillsHtml = sourcesList.map(s => {
+      const isActive = chartActiveSources.includes(s);
+      const label = sourceChartLabels[s];
+      let accentClass = '';
+      if (s.includes('Ramp')) accentClass = 'ramp';
+      else if (s.includes('Harmonic')) accentClass = 'harmonic';
+      else if (s.includes('YC')) accentClass = 'yc';
+      else accentClass = 'substack';
+
+      return `
+        <button class="legend-pill ${accentClass} ${isActive ? 'active' : ''}" 
+                onclick="toggleSourceDataset('${s}')">
+          ${isActive ? '●' : '○'} ${label}
+        </button>
+      `;
+    }).join('');
+
+    container.innerHTML = pillsHtml;
+  });
+}
+
+function toggleSourceDataset(s) {
+  const index = chartActiveSources.indexOf(s);
+  if (index > -1) {
+    if (chartActiveSources.length > 1) {
+      chartActiveSources.splice(index, 1);
+    }
+  } else {
+    chartActiveSources.push(s);
+  }
+  
+  renderCustomLegendPills();
+  renderTrendChart();
+  
+  if (document.getElementById('chart-modal').style.display !== 'none') {
+    renderMaximizedTrendChart();
+  }
+}
+
+function renderTrendChart() {
+  const canvas = document.getElementById('trendChart');
+  if (!canvas) return;
+
+  const { labels, datasets } = generateChartData();
+
+  if (trendChartInstance) {
+    trendChartInstance.destroy();
+  }
+
+  renderCustomLegendPills();
+
+  const datasetColors = {
+    'Ramp Vendor Reports': '#ff2e93',
+    'Harmonic Hot 25': '#00f0ff',
+    'a16z Build': '#bd59ff',
+    'Founders You Should Know': '#0088ff',
+    'Next Play': '#ffe600',
+    'YC Startup Directory': '#00e5a0',
+    'Early Days Substack': '#bd59ff'
+  };
+
+  const chartDatasets = chartActiveSources.map(s => {
+    return {
+      label: sourceChartLabels[s],
+      data: datasets[s] || [],
+      borderColor: datasetColors[s],
+      backgroundColor: datasetColors[s] + '15',
+      borderWidth: 2,
+      tension: 0.3,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      fill: false
+    };
+  });
+
+  trendChartInstance = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: chartDatasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#05070a',
+          titleColor: '#00f0ff',
+          bodyColor: '#e1e7f0',
+          titleFont: { family: 'IBM Plex Mono' },
+          bodyFont: { family: 'IBM Plex Mono' },
+          borderColor: '#1a2233',
+          borderWidth: 1
         }
-        if (weeksMap[monKey].counts[item.source] !== undefined) {
-          weeksMap[monKey].counts[item.source]++;
-        }
-      });
-      const sortedWeekKeys = Object.keys(weeksMap).sort();
-      const labels = sortedWeekKeys.map(k => weeksMap[k].date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' }));
-      const datasets = {};
-      sourcesList.forEach(s => { datasets[s] = []; });
-      sortedWeekKeys.forEach(k => {
-        sourcesList.forEach(s => { datasets[s].push(weeksMap[k].counts[s]); });
-      });
-      return { labels, datasets };
-    }
-
-    function renderCustomLegendPills() {
-      const containers = [document.getElementById('chart-legend-pills'), document.getElementById('modal-chart-legend-pills')];
-      containers.forEach(container => {
-        if (!container) return;
-        container.innerHTML = sourcesList.map(s => {
-          const isActive = chartActiveSources.includes(s);
-          let cls = s.includes('Ramp') ? 'ramp' : (s.includes('Harmonic') ? 'harmonic' : (s.includes('YC') ? 'yc' : 'substack'));
-          return `<button class="legend-pill ${cls} ${isActive ? 'active' : ''}" onclick="toggleSourceDataset('${s}')">${isActive ? '●' : '○'} ${sourceChartLabels[s]}</button>`;
-        }).join('');
-      });
-    }
-
-    function toggleSourceDataset(s) {
-      const index = chartActiveSources.indexOf(s);
-      if (index > -1) {
-        if (chartActiveSources.length > 1) chartActiveSources.splice(index, 1);
-      } else {
-        chartActiveSources.push(s);
-      }
-      renderCustomLegendPills();
-      renderTrendChart();
-      if (document.getElementById('chart-modal').style.display !== 'none') {
-        renderMaximizedTrendChart();
-      }
-    }
-
-    function renderTrendChart() {
-      const canvas = document.getElementById('trendChart');
-      if (!canvas) return;
-      const { labels, datasets } = generateChartData();
-      if (trendChartInstance) trendChartInstance.destroy();
-      renderCustomLegendPills();
-      const datasetColors = {'Ramp Vendor Reports': '#ff2e93', 'Harmonic Hot 25': '#00f0ff', 'a16z Build': '#bd59ff', 'Founders You Should Know': '#0088ff', 'Next Play': '#ffe600', 'YC Startup Directory': '#00e5a0', 'Early Days Substack': '#bd59ff'};
-      trendChartInstance = new Chart(canvas, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: chartActiveSources.map(s => ({
-            label: sourceChartLabels[s],
-            data: datasets[s],
-            borderColor: datasetColors[s],
-            borderWidth: 2,
-            tension: 0.3,
-            fill: false
-          }))
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(0, 240, 255, 0.1)' },
+          ticks: {
+            color: '#8fa2bd',
+            font: { family: 'IBM Plex Mono', size: 9 }
+          }
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { grid: { color: 'rgba(0, 240, 255, 0.1)' } },
-            y: { grid: { color: 'rgba(0, 240, 255, 0.1)' } }
+        y: {
+          grid: { color: 'rgba(0, 240, 255, 0.1)' },
+          ticks: {
+            color: '#8fa2bd',
+            precision: 0,
+            font: { family: 'IBM Plex Mono', size: 9 }
           }
         }
-      });
-    }
-
-    function renderMaximizedTrendChart() {
-      const canvas = document.getElementById('maxTrendChart');
-      if (!canvas) return;
-      const { labels, datasets } = generateChartData();
-      if (maxTrendChartInstance) maxTrendChartInstance.destroy();
-      const datasetColors = {'Ramp Vendor Reports': '#ff2e93', 'Harmonic Hot 25': '#00f0ff', 'a16z Build': '#bd59ff', 'Founders You Should Know': '#0088ff', 'Next Play': '#ffe600', 'YC Startup Directory': '#00e5a0', 'Early Days Substack': '#bd59ff'};
-      maxTrendChartInstance = new Chart(canvas, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: chartActiveSources.map(s => ({
-            label: sourceChartLabels[s],
-            data: datasets[s],
-            borderColor: datasetColors[s],
-            borderWidth: 3,
-            tension: 0.3,
-            fill: false
-          }))
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } }
-        }
-      });
-    }
-
-    function toggleMaximizeChart(isOpen) {
-      const modal = document.getElementById('chart-modal');
-      if (isOpen) {
-        modal.style.display = 'flex';
-        renderCustomLegendPills();
-        renderMaximizedTrendChart();
-      } else {
-        modal.style.display = 'none';
-        if (maxTrendChartInstance) maxTrendChartInstance.destroy();
       }
     }
+  });
+}
 
-    function setTimeWindow(val) {
-      activeTimeWindow = val;
-      applyFilters();
+function renderMaximizedTrendChart() {
+  const canvas = document.getElementById('maxTrendChart');
+  if (!canvas) return;
+
+  const { labels, datasets } = generateChartData();
+
+  if (maxTrendChartInstance) {
+    maxTrendChartInstance.destroy();
+  }
+
+  const datasetColors = {
+    'Ramp Vendor Reports': '#ff2e93',
+    'Harmonic Hot 25': '#00f0ff',
+    'a16z Build': '#bd59ff',
+    'Founders You Should Know': '#0088ff',
+    'Next Play': '#ffe600',
+    'YC Startup Directory': '#00e5a0',
+    'Early Days Substack': '#bd59ff'
+  };
+
+  const chartDatasets = chartActiveSources.map(s => {
+    return {
+      label: sourceChartLabels[s],
+      data: datasets[s] || [],
+      borderColor: datasetColors[s],
+      backgroundColor: datasetColors[s] + '10',
+      borderWidth: 3,
+      tension: 0.35,
+      pointRadius: 5,
+      pointHoverRadius: 8,
+      fill: false
+    };
+  });
+
+  maxTrendChartInstance = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: chartDatasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#05070a',
+          titleColor: '#00f0ff',
+          bodyColor: '#e1e7f0',
+          titleFont: { family: 'IBM Plex Mono', size: 11 },
+          bodyFont: { family: 'IBM Plex Mono', size: 11 },
+          borderColor: '#1a2233',
+          borderWidth: 1
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(0, 240, 255, 0.1)' },
+          ticks: {
+            color: '#8fa2bd',
+            font: { family: 'IBM Plex Mono', size: 10 }
+          }
+        },
+        y: {
+          grid: { color: 'rgba(0, 240, 255, 0.1)' },
+          ticks: {
+            color: '#8fa2bd',
+            precision: 0,
+            font: { family: 'IBM Plex Mono', size: 10 }
+          }
+        }
+      }
     }
+  });
+}
 
-    document.addEventListener('DOMContentLoaded', () => {
-      fetchFeedData();
-    });
-  </script>
+function toggleMaximizeChart(isOpen) {
+  const modal = document.getElementById('chart-modal');
+  if (!modal) return;
+
+  if (isOpen) {
+    modal.style.display = 'flex';
+    renderCustomLegendPills();
+    renderMaximizedTrendChart();
+  } else {
+    modal.style.display = 'none';
+    if (maxTrendChartInstance) {
+      maxTrendChartInstance.destroy();
+      maxTrendChartInstance = null;
+    }
+  }
+}
+
+function setTimeWindow(val) {
+  activeTimeWindow = val;
+  applyFilters();
+}
+
+// ==========================================
+// PSYCHO JOB TRACKER ENGINE
+// ==========================================
+
+let trackedStartups = [];
+let selectedTrackedId = null;
+
+function loadTrackerData() {
+  const saved = localStorage.getItem('psycho_job_tracker_data');
+  if (saved) {
+    try {
+      trackedStartups = JSON.parse(saved);
+    } catch (e) {
+      console.error('Failed to parse tracker data:', e);
+      trackedStartups = [];
+    }
+  } else {
+    // Seed default mock startups to look premium and guide the user
+    trackedStartups = [
+      {
+        id: 'mock-1',
+        name: 'Figure',
+        website: 'figure.ai',
+        source: 'Harmonic Hot 25',
+        desc: 'Building next-generation autonomous humanoid robots for manufacturing, logistics, and retail applications.',
+        founderTwitter: 'adcock_brett',
+        founderEmail: 'brett@figure.ai',
+        followedFounders: true,
+        followedTeam: true,
+        hasOSCodebase: false,
+        deepResearchCompleted: true,
+        researchNotes: 'Spotted on Harmonic Hot 25 index with a headcount growth rate of +45% in Q2 2026. Brett Adcock is the founder. They have a closed codebase, but they release regular demo videos. Focus on observing control issues and bipedal mechanics in their demo logs.',
+        interactionNotes: 'Replied to Brett Adcock\'s tweet about bimanual dexterity: suggested an approach to reinforcement learning policies for peg-in-hole insertion. Received a like from He He (Core Roboticist).',
+        valueDocLink: 'https://notion.so/figure-humanoid-manipulation-pitch',
+        pitchStatus: 'interviewing',
+        reachoutDMDate: '2026-07-12',
+        reachoutDone: true
+      },
+      {
+        id: 'mock-2',
+        name: 'Physical Intelligence',
+        website: 'physicalintelligence.company',
+        source: 'Harmonic Hot 25',
+        desc: 'Developing general-purpose artificial intelligence and foundation models to control robotic hardware.',
+        founderTwitter: 'karol_hausman',
+        founderEmail: 'contact@pi.co',
+        followedFounders: true,
+        followedTeam: false,
+        hasOSCodebase: false,
+        deepResearchCompleted: false,
+        researchNotes: 'Harmonic rank #2, Series A ($70M). Sourcing team members from followers list of @Physical_Intel.',
+        interactionNotes: 'Asked Karol Hausman a question regarding zero-shot cross-embodiment policies on Twitter. Awaiting response.',
+        valueDocLink: '',
+        pitchStatus: 'drafting',
+        reachoutDMDate: '',
+        reachoutDone: false
+      }
+    ];
+    saveTrackerData();
+  }
+}
+
+function saveTrackerData() {
+  localStorage.setItem('psycho_job_tracker_data', JSON.stringify(trackedStartups));
+  updateTrackerStats();
+}
+
+function updateTrackerStats() {
+  const total = trackedStartups.length;
+  
+  const followedCount = trackedStartups.filter(s => s.followedFounders).length;
+  const osCount = trackedStartups.filter(s => s.hasOSCodebase).length;
+  const pitchedCount = trackedStartups.filter(s => s.pitchStatus !== 'not-pitching' && s.pitchStatus !== 'drafting').length;
+
+  const totalEl = document.getElementById('tracker-stat-total');
+  const followedEl = document.getElementById('tracker-stat-followed');
+  const osEl = document.getElementById('tracker-stat-os');
+  const pitchedEl = document.getElementById('tracker-stat-pitched');
+
+  if (totalEl) totalEl.textContent = total;
+  if (followedEl) followedEl.textContent = `${followedCount} / ${total}`;
+  if (osEl) osEl.textContent = `${osCount} / ${total}`;
+  if (pitchedEl) pitchedEl.textContent = `${pitchedCount} / ${total}`;
+}
+
+function addStartupToTracker(name, website, source, desc = '') {
+  // Check duplicate
+  const exists = trackedStartups.find(s => s.name.toLowerCase() === name.toLowerCase());
+  if (exists) {
+    alert(`"${name}" is already in your Job Tracker!`);
+    selectedTrackedId = exists.id;
+    switchView('tracker');
+    return;
+  }
+
+  const newStartup = {
+    id: 'startup-' + Date.now(),
+    name: name,
+    website: website || '',
+    source: source || 'Self-Found',
+    desc: desc || '',
+    founderTwitter: '',
+    founderEmail: '',
+    followedFounders: false,
+    followedTeam: false,
+    hasOSCodebase: false,
+    deepResearchCompleted: false,
+    researchNotes: '',
+    interactionNotes: '',
+    valueDocLink: '',
+    pitchStatus: 'not-pitching',
+    reachoutDMDate: '',
+    reachoutDone: false
+  };
+
+  trackedStartups.push(newStartup);
+  saveTrackerData();
+  selectedTrackedId = newStartup.id;
+  renderTrackerList();
+  renderTrackerWorkspace();
+  
+  alert(`"${name}" has been added to your Psycho Job Tracker targets!`);
+  switchView('tracker');
+}
+
+function importStartupToTracker(title, link, source) {
+  let name = title;
+  let website = '';
+  
+  const cleanTitle = title.toLowerCase();
+  if (cleanTitle.includes('ramp saas spend report')) {
+    name = 'Ramp';
+    website = 'ramp.com';
+  } else if (cleanTitle.includes('ramp monthly vendor report')) {
+    name = 'Ramp';
+    website = 'ramp.com';
+  } else {
+    // Strip prefixes
+    name = title.replace(/^yc\s+[ws]\d+\s+batch:\s*/i, '')
+                .replace(/^harmonic\s+hot\s+25:\s*/i, '')
+                .replace(/top breakout.*/i, '')
+                .trim();
+  }
+
+  addStartupToTracker(name, website, source, title);
+}
+
+function deleteStartupFromTracker(id) {
+  if (confirm('Are you sure you want to remove this startup from your tracking pipeline?')) {
+    trackedStartups = trackedStartups.filter(s => s.id !== id);
+    saveTrackerData();
+    if (selectedTrackedId === id) {
+      selectedTrackedId = trackedStartups.length > 0 ? trackedStartups[0].id : null;
+    }
+    renderTrackerList();
+    renderTrackerWorkspace();
+  }
+}
+
+function updateStartupField(id, field, value) {
+  const startup = trackedStartups.find(s => s.id === id);
+  if (startup) {
+    startup[field] = value;
+    saveTrackerData();
+    
+    if (field === 'name' || field === 'pitchStatus' || field === 'website') {
+      renderTrackerList();
+    }
+  }
+}
+
+function renderTrackerList() {
+  const container = document.getElementById('tracker-list-container');
+  if (!container) return;
+
+  if (trackedStartups.length === 0) {
+    container.innerHTML = `
+      <div class="no-results" style="border: none; padding: 30px 10px; font-size: 10px;">
+        NO TARGETS TRACKED.<br>ADD ONE MANUALLY OR FROM THE FEEDS ABOVE.
+      </div>
+    `;
+    return;
+  }
+
+  const html = trackedStartups.map(startup => {
+    const isSelected = startup.id === selectedTrackedId;
+    let statusClass = 'badge-not-pitching';
+    let statusLabel = 'Discovery';
+    
+    if (startup.pitchStatus === 'drafting') { statusClass = 'badge-drafting'; statusLabel = 'Drafting'; }
+    else if (startup.pitchStatus === 'pitched') { statusClass = 'badge-pitched'; statusLabel = 'Pitched'; }
+    else if (startup.pitchStatus === 'interviewing') { statusClass = 'badge-interviewing'; statusLabel = 'Interview'; }
+    else if (startup.pitchStatus === 'offer') { statusClass = 'badge-offer'; statusLabel = 'Offer'; }
+    else if (startup.pitchStatus === 'archived') { statusClass = 'badge-archived'; statusLabel = 'Archived'; }
+
+    return `
+      <div class="tracker-item-card ${isSelected ? 'selected' : ''}" onclick="selectTrackedStartup('${startup.id}')">
+        <div class="tracker-item-name">${escapeHtml(startup.name)}</div>
+        <div class="tracker-item-meta">
+          <span>${escapeHtml(startup.website || 'no site')}</span>
+          <span class="tracker-status-badge ${statusClass}">${statusLabel}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = html;
+}
+
+function selectTrackedStartup(id) {
+  selectedTrackedId = id;
+  renderTrackerList();
+  renderTrackerWorkspace();
+}
+
+function renderTrackerWorkspace() {
+  const container = document.getElementById('tracker-workspace-content');
+  if (!container) return;
+
+  const startup = trackedStartups.find(s => s.id === selectedTrackedId);
+  if (!startup) {
+    container.innerHTML = `
+      <div class="tracker-workspace-empty">
+        <div class="detail-empty-icon" style="width: 60px; height: 60px;">
+          <svg width="24" height="24" viewBox="0 0 20 20" fill="none">
+            <rect x="3" y="3" width="14" height="16" rx="2" stroke="#536b8c" stroke-width="1.2"/>
+            <path d="M6 7h8M6 10h8M6 13h5" stroke="#536b8c" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="detail-empty-text" style="font-size: 11px; letter-spacing: 0.1em; line-height: 1.8;">
+          SELECT A TARGET STARTUP FROM THE LEFT PANEL<br>OR ADD A NEW ONE TO INITIATE RECONNAISSANCE.
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="tracker-workspace-panel">
+      <!-- Section 1: Basic Recon -->
+      <div class="tracker-section">
+        <div class="tracker-section-title">
+          <span>Step 1 &amp; 2: Basic Intelligence &amp; Digital Recon</span>
+          <span style="font-size: 8px; color: var(--text-muted); font-weight: normal;">Source: ${escapeHtml(startup.source)}</span>
+        </div>
+        <div class="tracker-form-grid">
+          <div class="tracker-form-group">
+            <label class="tracker-label">Company Name</label>
+            <input type="text" class="tracker-input" value="${escapeHtml(startup.name)}" oninput="updateStartupField('${startup.id}', 'name', this.value)">
+          </div>
+          <div class="tracker-form-group">
+            <label class="tracker-label">Website Domain</label>
+            <input type="text" class="tracker-input" value="${escapeHtml(startup.website)}" placeholder="e.g. figure.ai" oninput="updateStartupField('${startup.id}', 'website', this.value)">
+          </div>
+          <div class="tracker-form-group">
+            <label class="tracker-label">Founder Twitter / X handles</label>
+            <input type="text" class="tracker-input" value="${escapeHtml(startup.founderTwitter)}" placeholder="e.g. adcock_brett, karol_hausman" oninput="updateStartupField('${startup.id}', 'founderTwitter', this.value)">
+          </div>
+          <div class="tracker-form-group">
+            <label class="tracker-label">Founders' Emails</label>
+            <input type="text" class="tracker-input" value="${escapeHtml(startup.founderEmail)}" placeholder="e.g. brett@figure.ai" oninput="updateStartupField('${startup.id}', 'founderEmail', this.value)">
+          </div>
+          <div class="tracker-form-group full-width">
+            <label class="tracker-label">Brief Description / Mission</label>
+            <textarea class="tracker-textarea" oninput="updateStartupField('${startup.id}', 'desc', this.value)">${escapeHtml(startup.desc)}</textarea>
+          </div>
+          <div class="tracker-form-group full-width">
+            <label class="tracker-label">Digital Footprint Progress Check</label>
+            <div class="tracker-checkbox-list">
+              <label class="tracker-checkbox-row">
+                <input type="checkbox" ${startup.followedFounders ? 'checked' : ''} onchange="updateStartupField('${startup.id}', 'followedFounders', this.checked)">
+                <span>Followed Founders on Twitter/X (Essential)</span>
+              </label>
+              <label class="tracker-checkbox-row">
+                <input type="checkbox" ${startup.followedTeam ? 'checked' : ''} onchange="updateStartupField('${startup.id}', 'followedTeam', this.checked)">
+                <span>Followed Core Team / Engineers (from company follower list)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Codebase & Research -->
+      <div class="tracker-section">
+        <div class="tracker-section-title">Step 3: Rawdogg &amp; Deep Research</div>
+        <div class="tracker-checkbox-list" style="margin-bottom: 14px;">
+          <label class="tracker-checkbox-row">
+            <input type="checkbox" ${startup.hasOSCodebase ? 'checked' : ''} onchange="updateStartupField('${startup.id}', 'hasOSCodebase', this.checked)">
+            <span style="color: var(--green); font-weight: bold;">★ OPEN SOURCE CODEBASE FOUND (JACKPOT!)</span>
+          </label>
+          <label class="tracker-checkbox-row">
+            <input type="checkbox" ${startup.deepResearchCompleted ? 'checked' : ''} onchange="updateStartupField('${startup.id}', 'deepResearchCompleted', this.checked)">
+            <span>Deep Research Phase Completed</span>
+          </label>
+        </div>
+        <div class="tracker-form-group">
+          <label class="tracker-label">Reconnaissance Notes (Problems faced, tech stack, codebase insights)</label>
+          <textarea class="tracker-textarea" style="min-height: 100px;" placeholder="What software do they use? What issues are they running into? How can you help?" oninput="updateStartupField('${startup.id}', 'researchNotes', this.value)">${escapeHtml(startup.researchNotes)}</textarea>
+        </div>
+      </div>
+
+      <!-- Section 3: Value Pitching -->
+      <div class="tracker-section">
+        <div class="tracker-section-title">Step 4 &amp; 5: Value Pitching &amp; Outreach</div>
+        <div class="tracker-form-grid">
+          <div class="tracker-form-group">
+            <label class="tracker-label">Pipeline Status</label>
+            <select class="tracker-select" onchange="updateStartupField('${startup.id}', 'pitchStatus', this.value)">
+              <option value="not-pitching" ${startup.pitchStatus === 'not-pitching' ? 'selected' : ''}>Not Pitching (Researching)</option>
+              <option value="drafting" ${startup.pitchStatus === 'drafting' ? 'selected' : ''}>Drafting Value Document</option>
+              <option value="pitched" ${startup.pitchStatus === 'pitched' ? 'selected' : ''}>Value Pitch Sent</option>
+              <option value="interviewing" ${startup.pitchStatus === 'interviewing' ? 'selected' : ''}>Interviewing / In Conversations</option>
+              <option value="offer" ${startup.pitchStatus === 'offer' ? 'selected' : ''}>Offer Received</option>
+              <option value="archived" ${startup.pitchStatus === 'archived' ? 'selected' : ''}>Archived / Postponed</option>
+            </select>
+          </div>
+          <div class="tracker-form-group">
+            <label class="tracker-label">Value Document / Pitch Link (Notion/GitHub)</label>
+            <input type="text" class="tracker-input" value="${escapeHtml(startup.valueDocLink)}" placeholder="e.g. https://notion.so/my-value-deck" oninput="updateStartupField('${startup.id}', 'valueDocLink', this.value)">
+          </div>
+          <div class="tracker-form-group full-width">
+            <label class="tracker-label">Interaction Log (Comments, suggestions, question threads)</label>
+            <textarea class="tracker-textarea" placeholder="List dates and summaries of comments, ideas suggested, and cold emails sent..." oninput="updateStartupField('${startup.id}', 'interactionNotes', this.value)">${escapeHtml(startup.interactionNotes)}</textarea>
+          </div>
+          <div class="tracker-form-group">
+            <label class="tracker-label">Reachout Date</label>
+            <input type="date" class="tracker-input" value="${escapeHtml(startup.reachoutDMDate)}" onchange="updateStartupField('${startup.id}', 'reachoutDMDate', this.value)">
+          </div>
+          <div class="tracker-form-group" style="justify-content: center;">
+            <label class="tracker-checkbox-row" style="margin-top: 15px;">
+              <input type="checkbox" ${startup.reachoutDone ? 'checked' : ''} onchange="updateStartupField('${startup.id}', 'reachoutDone', this.checked)">
+              <span>Out-of-band DM/Email Pitch Completed</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="tracker-row-actions">
+        <button class="tracker-btn-danger" onclick="deleteStartupFromTracker('${startup.id}')">REMOVE TARGET</button>
+        <button class="tracker-btn-save" onclick="alert('All changes saved! LocalStorage sync active.')">FORCE SYNC STATUS</button>
+      </div>
+    </div>
+  `;
+}
+
+// Modal Toggle Handlers
+function toggleAddModal(isOpen) {
+  const modal = document.getElementById('tracker-add-modal');
+  if (!modal) return;
+  modal.style.display = isOpen ? 'flex' : 'none';
+  
+  if (isOpen) {
+    document.getElementById('modal-add-name').value = '';
+    document.getElementById('modal-add-site').value = '';
+    document.getElementById('modal-add-source').value = 'Self-Found';
+    document.getElementById('modal-add-desc').value = '';
+  }
+}
+
+function saveNewStartupFromModal() {
+  const name = document.getElementById('modal-add-name').value.trim();
+  const site = document.getElementById('modal-add-site').value.trim();
+  const source = document.getElementById('modal-add-source').value.trim();
+  const desc = document.getElementById('modal-add-desc').value.trim();
+
+  if (!name) {
+    alert('Please enter a company name.');
+    return;
+  }
+
+  addStartupToTracker(name, site, source, desc);
+  toggleAddModal(false);
+}
+
+</script>
 </body>
 </html>

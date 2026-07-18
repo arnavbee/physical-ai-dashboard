@@ -76,160 +76,178 @@
     
     <!-- Sidebar -->
     <aside class="sidebar">
-      <div class="panel-label">CATEGORIES</div>
-      <div class="filter-group">
-        <div class="filter-item active" data-cat="all" onclick="setCategory('all', this)">
-          <div class="filter-dot" style="background:#00f0ff"></div>
-          <span class="filter-name">All sources</span>
-          <span class="filter-count" id="count-all">—</span>
+      <!-- Discovery Sidebar Views -->
+      <div id="sidebar-discovery-views">
+        <div class="panel-label">CATEGORIES</div>
+        <div class="filter-group">
+          <div class="filter-item active" data-cat="all" onclick="setCategory('all', this)">
+            <div class="filter-dot" style="background:#00f0ff"></div>
+            <span class="filter-name">All sources</span>
+            <span class="filter-count" id="count-all">—</span>
+          </div>
+          <div class="filter-item" data-cat="market-reports" onclick="setCategory('market-reports', this)">
+            <div class="filter-dot" style="background:#ff2e93"></div>
+            <span class="filter-name">Market &amp; Spend Reports</span>
+            <span class="filter-count" id="count-market">—</span>
+          </div>
+          <div class="filter-item" data-cat="talent-jobs" onclick="setCategory('talent-jobs', this)">
+            <div class="filter-dot" style="background:#ffe600"></div>
+            <span class="filter-name">Talent &amp; Job Feeds</span>
+            <span class="filter-count" id="count-talent">—</span>
+          </div>
+          <div class="filter-item" data-cat="pitch-showcases" onclick="setCategory('pitch-showcases', this)">
+            <div class="filter-dot" style="background:#0088ff"></div>
+            <span class="filter-name">Pitch &amp; Showcases</span>
+            <span class="filter-count" id="count-pitch">—</span>
+          </div>
+          <div class="filter-item" data-cat="startup-directories" onclick="setCategory('startup-directories', this)">
+            <div class="filter-dot" style="background:#00e5a0"></div>
+            <span class="filter-name">Startup Directories</span>
+            <span class="filter-count" id="count-directories">—</span>
+          </div>
+          <div class="filter-item" data-cat="substack-insights" onclick="setCategory('substack-insights', this)">
+            <div class="filter-dot" style="background:#bd59ff"></div>
+            <span class="filter-name">Substack &amp; Insights</span>
+            <span class="filter-count" id="count-substack">—</span>
+          </div>
         </div>
-        <div class="filter-item" data-cat="market-reports" onclick="setCategory('market-reports', this)">
-          <div class="filter-dot" style="background:#ff2e93"></div>
-          <span class="filter-name">Market &amp; Spend Reports</span>
-          <span class="filter-count" id="count-market">—</span>
+
+        <div class="panel-label" style="margin-top:4px">SECTOR KEYWORDS</div>
+        <div class="filter-group" id="keyword-filters">
+          <div class="filter-item" data-kw="agent" onclick="setKeyword('agent', this)">
+            <div class="filter-dot" style="background:#00f0ff; opacity:0.4"></div>
+            <span class="filter-name">AI Agents &amp; ML</span>
+            <span class="filter-count" id="kw-agent">—</span>
+          </div>
+          <div class="filter-item" data-kw="saas" onclick="setKeyword('saas', this)">
+            <div class="filter-dot" style="background:#ff2e93; opacity:0.4"></div>
+            <span class="filter-name">SaaS &amp; Spend</span>
+            <span class="filter-count" id="kw-saas">—</span>
+          </div>
+          <div class="filter-item" data-kw="developer" onclick="setKeyword('developer', this)">
+            <div class="filter-dot" style="background:#ffe600; opacity:0.4"></div>
+            <span class="filter-name">Developer Tools</span>
+            <span class="filter-count" id="kw-developer">—</span>
+          </div>
+          <div class="filter-item" data-kw="robot" onclick="setKeyword('robot', this)">
+            <div class="filter-dot" style="background:#00e5a0; opacity:0.4"></div>
+            <span class="filter-name">Hardware &amp; Robotics</span>
+            <span class="filter-count" id="kw-robot">—</span>
+          </div>
+          <div class="filter-item" data-kw="fintech" onclick="setKeyword('fintech', this)">
+            <div class="filter-dot" style="background:#0088ff; opacity:0.4"></div>
+            <span class="filter-name">Fintech &amp; Finance</span>
+            <span class="filter-count" id="kw-fintech">—</span>
+          </div>
+          <div class="filter-item" data-kw="bio" onclick="setKeyword('bio', this)">
+            <div class="filter-dot" style="background:#bd59ff; opacity:0.4"></div>
+            <span class="filter-name">BioTech &amp; Health</span>
+            <span class="filter-count" id="kw-bio">—</span>
+          </div>
         </div>
-        <div class="filter-item" data-cat="talent-jobs" onclick="setCategory('talent-jobs', this)">
-          <div class="filter-dot" style="background:#ffe600"></div>
-          <span class="filter-name">Talent &amp; Job Feeds</span>
-          <span class="filter-count" id="count-talent">—</span>
-        </div>
-        <div class="filter-item" data-cat="pitch-showcases" onclick="setCategory('pitch-showcases', this)">
-          <div class="filter-dot" style="background:#0088ff"></div>
-          <span class="filter-name">Pitch &amp; Showcases</span>
-          <span class="filter-count" id="count-pitch">—</span>
-        </div>
-        <div class="filter-item" data-cat="startup-directories" onclick="setCategory('startup-directories', this)">
-          <div class="filter-dot" style="background:#00e5a0"></div>
-          <span class="filter-name">Startup Directories</span>
-          <span class="filter-count" id="count-directories">—</span>
-        </div>
-        <div class="filter-item" data-cat="substack-insights" onclick="setCategory('substack-insights', this)">
-          <div class="filter-dot" style="background:#bd59ff"></div>
-          <span class="filter-name">Substack &amp; Insights</span>
-          <span class="filter-count" id="count-substack">—</span>
+
+        <div class="panel-label" style="margin-top:4px">INDEXED SOURCES</div>
+        <div style="padding: 4px 0;" id="sidebar-sources-links">
+          <div class="source-item">
+            <div class="source-dot" style="background:#ff2e93"></div>
+            <span class="source-name">Ramp Vendor Reports</span>
+            <a href="https://ramp.com/blog" target="_blank" class="source-link">↗ site</a>
+          </div>
+          <div class="source-item">
+            <div class="source-dot" style="background:#00f0ff"></div>
+            <span class="source-name">Harmonic Hot 25</span>
+            <a href="https://harmonic.ai" target="_blank" class="source-link">↗ site</a>
+          </div>
+          <div class="source-item">
+            <div class="source-dot" style="background:#bd59ff"></div>
+            <span class="source-name">a16z Build</span>
+            <a href="https://a16zbuild.substack.com" target="_blank" class="source-link">↗ feed</a>
+          </div>
+          <div class="source-item">
+            <div class="source-dot" style="background:#0088ff"></div>
+            <span class="source-name">Founders You Should Know</span>
+            <a href="https://foundersysk.substack.com" target="_blank" class="source-link">↗ feed</a>
+          </div>
+          <div class="source-item">
+            <div class="source-dot" style="background:#ffe600"></div>
+            <span class="source-name">Next Play newsletter</span>
+            <a href="https://nextplayso.substack.com" target="_blank" class="source-link">↗ feed</a>
+          </div>
+          <div class="source-item">
+            <div class="source-dot" style="background:#00e5a0"></div>
+            <span class="source-name">YC Startup Directory</span>
+            <a href="https://www.ycombinator.com/companies" target="_blank" class="source-link">↗ site</a>
+          </div>
+          <div class="source-item">
+            <div class="source-dot" style="background:#bd59ff"></div>
+            <span class="source-name">Early Days Substack</span>
+            <a href="https://earlydays.substack.com" target="_blank" class="source-link">↗ feed</a>
+          </div>
         </div>
       </div>
 
-      <div class="panel-label" style="margin-top:4px">SECTOR KEYWORDS</div>
-      <div class="filter-group" id="keyword-filters">
-        <div class="filter-item" data-kw="agent" onclick="setKeyword('agent', this)">
-          <div class="filter-dot" style="background:#00f0ff; opacity:0.4"></div>
-          <span class="filter-name">AI Agents &amp; ML</span>
-          <span class="filter-count" id="kw-agent">—</span>
+      <!-- Tracker Sidebar Views -->
+      <div id="sidebar-tracker-views" style="display: none;">
+        <div class="tracker-list-header">
+          <span class="panel-label" style="padding: 0; border: none;">PSYCHO TARGETS</span>
+          <button class="tracker-add-btn" onclick="toggleAddModal(true)">✚ ADD STARTUP</button>
         </div>
-        <div class="filter-item" data-kw="saas" onclick="setKeyword('saas', this)">
-          <div class="filter-dot" style="background:#ff2e93; opacity:0.4"></div>
-          <span class="filter-name">SaaS &amp; Spend</span>
-          <span class="filter-count" id="kw-saas">—</span>
-        </div>
-        <div class="filter-item" data-kw="developer" onclick="setKeyword('developer', this)">
-          <div class="filter-dot" style="background:#ffe600; opacity:0.4"></div>
-          <span class="filter-name">Developer Tools</span>
-          <span class="filter-count" id="kw-developer">—</span>
-        </div>
-        <div class="filter-item" data-kw="robot" onclick="setKeyword('robot', this)">
-          <div class="filter-dot" style="background:#00e5a0; opacity:0.4"></div>
-          <span class="filter-name">Hardware &amp; Robotics</span>
-          <span class="filter-count" id="kw-robot">—</span>
-        </div>
-        <div class="filter-item" data-kw="fintech" onclick="setKeyword('fintech', this)">
-          <div class="filter-dot" style="background:#0088ff; opacity:0.4"></div>
-          <span class="filter-name">Fintech &amp; Finance</span>
-          <span class="filter-count" id="kw-fintech">—</span>
-        </div>
-        <div class="filter-item" data-kw="bio" onclick="setKeyword('bio', this)">
-          <div class="filter-dot" style="background:#bd59ff; opacity:0.4"></div>
-          <span class="filter-name">BioTech &amp; Health</span>
-          <span class="filter-count" id="kw-bio">—</span>
-        </div>
-      </div>
-
-      <div class="panel-label" style="margin-top:4px">INDEXED SOURCES</div>
-      <div style="padding: 4px 0;" id="sidebar-sources-links">
-        <div class="source-item">
-          <div class="source-dot" style="background:#ff2e93"></div>
-          <span class="source-name">Ramp Vendor Reports</span>
-          <a href="https://ramp.com/blog" target="_blank" class="source-link">↗ site</a>
-        </div>
-        <div class="source-item">
-          <div class="source-dot" style="background:#00f0ff"></div>
-          <span class="source-name">Harmonic Hot 25</span>
-          <a href="https://harmonic.ai" target="_blank" class="source-link">↗ site</a>
-        </div>
-        <div class="source-item">
-          <div class="source-dot" style="background:#bd59ff"></div>
-          <span class="source-name">a16z Build</span>
-          <a href="https://a16zbuild.substack.com" target="_blank" class="source-link">↗ feed</a>
-        </div>
-        <div class="source-item">
-          <div class="source-dot" style="background:#0088ff"></div>
-          <span class="source-name">Founders You Should Know</span>
-          <a href="https://foundersysk.substack.com" target="_blank" class="source-link">↗ feed</a>
-        </div>
-        <div class="source-item">
-          <div class="source-dot" style="background:#ffe600"></div>
-          <span class="source-name">Next Play newsletter</span>
-          <a href="https://nextplayso.substack.com" target="_blank" class="source-link">↗ feed</a>
-        </div>
-        <div class="source-item">
-          <div class="source-dot" style="background:#00e5a0"></div>
-          <span class="source-name">YC Startup Directory</span>
-          <a href="https://www.ycombinator.com/companies" target="_blank" class="source-link">↗ site</a>
-        </div>
-        <div class="source-item">
-          <div class="source-dot" style="background:#bd59ff"></div>
-          <span class="source-name">Early Days Substack</span>
-          <a href="https://earlydays.substack.com" target="_blank" class="source-link">↗ feed</a>
+        <div id="tracker-list-container">
+          <!-- Populated dynamically via JavaScript -->
         </div>
       </div>
     </aside>
 
     <!-- Main Feed -->
     <main class="feed">
-      <div class="feed-header">
-        <span class="feed-title" id="feed-title-label">LATEST ENTRIES</span>
-        <div class="search-wrap">
-          <span class="search-icon">⌕</span>
-          <input type="text" class="search-input" placeholder="Search report title, builder, summary..." id="search-input" oninput="onSearch()">
-        </div>
-        <select class="search-input" id="time-window-select" onchange="setTimeWindow(this.value)" style="width: auto; padding: 5px 12px; cursor: pointer; text-transform: uppercase; font-size: 10px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg3); color: var(--text); outline: none;">
-          <option value="all">All Time</option>
-          <option value="1">1 Day</option>
-          <option value="7">7 Days</option>
-          <option value="30">1 Month</option>
-          <option value="90">3 Months</option>
-          <option value="180">6 Months</option>
-          <option value="365">1 Year</option>
-        </select>
-        <button class="refresh-btn" id="refresh-btn" onclick="fetchFeedData(true)">
-          <svg id="refresh-icon" width="11" height="11" viewBox="0 0 12 12" fill="none">
-            <path d="M10 6A4 4 0 1 1 6 2V1l2.5 1.5L6 4V3a3 3 0 1 0 3 3h1z" fill="currentColor"/>
-          </svg>
-          REFRESH
-        </button>
-      </div>
-      
       <!-- View Navigation Tabs -->
       <div class="feed-tabs">
         <button class="tab-btn active" id="tab-btn-feed" onclick="switchView('feed')">FEED VIEW</button>
         <button class="tab-btn" id="tab-btn-chart" onclick="switchView('chart')">VENTURE TRENDLINES</button>
+        <button class="tab-btn" id="tab-btn-tracker" onclick="switchView('tracker')">PSYCHO JOB TRACKER</button>
       </div>
 
-      <!-- Dynamic Feed Container -->
-      <div id="feed-content">
-        <div class="loading-state">
-          <div class="loader-grid">
-            <div class="loader-cell"></div><div class="loader-cell"></div>
-            <div class="loader-cell"></div><div class="loader-cell"></div>
-            <div class="loader-cell"></div><div class="loader-cell"></div>
-            <div class="loader-cell"></div><div class="loader-cell"></div>
+      <!-- Feed View Container -->
+      <div id="feed-view-container">
+        <div class="feed-header">
+          <span class="feed-title" id="feed-title-label">LATEST ENTRIES</span>
+          <div class="search-wrap">
+            <span class="search-icon">⌕</span>
+            <input type="text" class="search-input" placeholder="Search report title, builder, summary..." id="search-input" oninput="onSearch()">
           </div>
-          <div class="loading-text">COMMUNICATING WITH VENTURE AGGREGATOR PIPELINE...</div>
+          <select class="search-input" id="time-window-select" onchange="setTimeWindow(this.value)" style="width: auto; padding: 5px 12px; cursor: pointer; text-transform: uppercase; font-size: 10px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg3); color: var(--text); outline: none;">
+            <option value="all">All Time</option>
+            <option value="1">1 Day</option>
+            <option value="7">7 Days</option>
+            <option value="30">1 Month</option>
+            <option value="90">3 Months</option>
+            <option value="180">6 Months</option>
+            <option value="365">1 Year</option>
+          </select>
+          <button class="refresh-btn" id="refresh-btn" onclick="fetchFeedData(true)">
+            <svg id="refresh-icon" width="11" height="11" viewBox="0 0 12 12" fill="none">
+              <path d="M10 6A4 4 0 1 1 6 2V1l2.5 1.5L6 4V3a3 3 0 1 0 3 3h1z" fill="currentColor"/>
+            </svg>
+            REFRESH
+          </button>
+        </div>
+        
+        <!-- Dynamic Feed Container -->
+        <div id="feed-content">
+          <div class="loading-state">
+            <div class="loader-grid">
+              <div class="loader-cell"></div><div class="loader-cell"></div>
+              <div class="loader-cell"></div><div class="loader-cell"></div>
+              <div class="loader-cell"></div><div class="loader-cell"></div>
+              <div class="loader-cell"></div><div class="loader-cell"></div>
+            </div>
+            <div class="loading-text">COMMUNICATING WITH VENTURE AGGREGATOR PIPELINE...</div>
+          </div>
         </div>
       </div>
 
       <!-- Chart Trend Container -->
-      <div id="chart-view-container" style="display: none; padding: 20px; flex-direction: column; gap: 16px; height: calc(100% - 90px); overflow-y: auto;">
+      <div id="chart-view-container" style="display: none; padding: 20px; flex-direction: column; gap: 16px; height: calc(100% - 37px); overflow-y: auto;">
         <div class="chart-header-row" style="display: flex; justify-content: space-between; align-items: center;">
           <div style="font-family: var(--mono); font-size: 9px; color: var(--text-muted); letter-spacing: 0.12em; text-transform: uppercase;">
             Venture Intelligence Over-Time Source Output
@@ -250,20 +268,79 @@
           <span style="color: var(--cyan); font-weight: bold;">[PIPELINE ANALYTICS]</span>: This trendline chart tracks publication frequency of articles and reports aggregated from Substack feeds and curated indexes. Toggling sources above highlights comparative output velocity.
         </div>
       </div>
+
+      <!-- Job Tracker Workspace Container -->
+      <div id="tracker-workspace-container" style="display: none; height: calc(100% - 37px); flex-direction: column; overflow: hidden;">
+        <div class="tracker-bar">
+          <div class="tracker-stats">
+            <div class="tracker-stat-pill">TOTAL TARGETS: <strong id="tracker-stat-total">0</strong></div>
+            <div class="tracker-stat-pill">TWITTER FOLLOWED: <strong id="tracker-stat-followed">0 / 0</strong></div>
+            <div class="tracker-stat-pill">OPEN SOURCE JACKPOT: <strong id="tracker-stat-os">0 / 0</strong></div>
+            <div class="tracker-stat-pill">PITCH SENT: <strong id="tracker-stat-pitched">0 / 0</strong></div>
+          </div>
+        </div>
+        <div id="tracker-workspace-content" style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+          <!-- Dynamically populated from JS -->
+        </div>
+      </div>
     </main>
 
     <!-- Detail Panel -->
     <aside class="detail">
-      <div class="detail-header">ENTRY ANALYSIS &amp; DATA</div>
-      <div id="detail-content">
-        <div class="detail-empty">
-          <div class="detail-empty-icon">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <rect x="3" y="3" width="14" height="16" rx="2" stroke="#536b8c" stroke-width="1.2"/>
-              <path d="M6 7h8M6 10h8M6 13h5" stroke="#536b8c" stroke-width="1.2" stroke-linecap="round"/>
-            </svg>
+      <!-- Discovery Detail Views -->
+      <div id="detail-discovery-views" style="height: 100%; display: flex; flex-direction: column;">
+        <div class="detail-header">ENTRY ANALYSIS &amp; DATA</div>
+        <div id="detail-content" style="flex: 1; overflow-y: auto;">
+          <div class="detail-empty">
+            <div class="detail-empty-icon">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <rect x="3" y="3" width="14" height="16" rx="2" stroke="#536b8c" stroke-width="1.2"/>
+                <path d="M6 7h8M6 10h8M6 13h5" stroke="#536b8c" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="detail-empty-text">SELECT AN ARTICLE OR INTELLIGENCE REPORT<br>TO VIEW DYNAMIC METRICS</div>
           </div>
-          <div class="detail-empty-text">SELECT AN ARTICLE OR INTELLIGENCE REPORT<br>TO VIEW DYNAMIC METRICS</div>
+        </div>
+      </div>
+
+      <!-- Tracker Detail Views (Methodology Guide) -->
+      <div id="detail-tracker-views" class="tracker-guide-panel" style="display: none; height: 100%;">
+        <div class="tracker-guide-header">
+          <span>PSYCHO METHODOLOGY</span>
+        </div>
+        <div class="tracker-guide-content">
+          <h3>The Core Strategy</h3>
+          <p>Traditional job hunting (mass-applying) is dead. Great startups hire from relationships and out-of-band proof of value. Your goal: <strong>obsess over 3-5 high-conviction targets</strong> and force your way in by solving their problems before they even interview you.</p>
+
+          <h3>1. Spotting Signal</h3>
+          <p>Use the Venture Intel dashboard feeds:</p>
+          <ul>
+            <li><strong>Ramp Reports:</strong> Spot categories with growing spend. Target the fastest-growing vendors (they need headcount).</li>
+            <li><strong>Harmonic Hot 25:</strong> Identify startups with massive headcount velocity spikes. They are actively scale-hiring.</li>
+            <li><strong>YC Directory:</strong> Target newly funded early-stage batches (W26/S25). They have fresh capital and need builders.</li>
+          </ul>
+
+          <h3>2. Digital Reconnaissance</h3>
+          <p>Find the founders and core team members on Twitter/X and get their emails.</p>
+          <blockquote>
+            <strong>Tip:</strong> Search the company's official Twitter account, and check its followers list. The founders and early engineers almost always follow it. Target team members with fewer followers; they are far more likely to read and reply.
+          </blockquote>
+
+          <h3>3. Open Source Jackpot</h3>
+          <p>If their codebase is open source: <strong>You hit the jackpot.</strong> Stop reading and start contributing! Fix bugs, optimize files, improve documentation. Your name will appear directly in their repository before you pitch them.</p>
+          <p>If they are closed-source or you are in a non-technical role: observe their landing page, docs, or community channels. Write down 5 friction points and brainstorm clear, actionable solutions.</p>
+
+          <h3>4. Authentically Interact</h3>
+          <p>Engage with the founders' tweets and posts. Suggest ideas, ask creative questions, and share helpful resources. <strong>Avoid sycophant/jerk vibes.</strong> Build a positive digital relationship so they recognize your name when you reach out.</p>
+
+          <h3>5. The Value Pitch</h3>
+          <p>Create a detailed project/doc (Notion/Obsidian) specifically for them. Show, don't tell:
+            <ul>
+              <li><strong>Engineers:</strong> Code a working prototype of a requested feature, write a comprehensive test suite, or draft a refactor plan.</li>
+              <li><strong>Growth/Ops:</strong> A 30-day community launch blueprint, copy rewrites, or a breakdown of marketing channels.</li>
+            </ul>
+            Pitch it via direct email or Cold DM. "Hey [Name], built this for you guys to solve [Problem]. Hope it helps!"
+          </p>
         </div>
       </div>
     </aside>
@@ -282,6 +359,38 @@
       </div>
       <div class="chart-modal-canvas-wrap">
         <canvas id="maxTrendChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Startup Modal -->
+  <div id="tracker-add-modal" class="tracker-modal-overlay" style="display: none;">
+    <div class="tracker-modal-content">
+      <div class="tracker-modal-header">
+        <div class="logo-text" style="color: var(--cyan);">ADD TARGET STARTUP</div>
+        <button class="refresh-btn" onclick="toggleAddModal(false)">✕</button>
+      </div>
+      <div class="tracker-modal-body">
+        <div class="tracker-form-group">
+          <label class="tracker-label">Startup Name</label>
+          <input type="text" id="modal-add-name" class="tracker-input" placeholder="e.g. Physical Intelligence">
+        </div>
+        <div class="tracker-form-group">
+          <label class="tracker-label">Website Domain</label>
+          <input type="text" id="modal-add-site" class="tracker-input" placeholder="e.g. physicalintelligence.company">
+        </div>
+        <div class="tracker-form-group">
+          <label class="tracker-label">Source / Notes</label>
+          <input type="text" id="modal-add-source" class="tracker-input" placeholder="e.g. Harmonic Hot 25, self-found">
+        </div>
+        <div class="tracker-form-group">
+          <label class="tracker-label">Brief Description</label>
+          <textarea id="modal-add-desc" class="tracker-textarea" placeholder="What do they build? why do you want to work here?"></textarea>
+        </div>
+      </div>
+      <div class="tracker-modal-footer">
+        <button class="tracker-btn-danger" style="padding: 6px 12px;" onclick="toggleAddModal(false)">CANCEL</button>
+        <button class="tracker-btn-save" style="padding: 6px 12px;" onclick="saveNewStartupFromModal()">ADD TO TRACKER</button>
       </div>
     </div>
   </div>

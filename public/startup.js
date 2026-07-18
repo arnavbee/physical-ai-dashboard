@@ -371,7 +371,8 @@ function selectFeedItem(uniqueId) {
                   <td class="h-rank">#${s.rank}</td>
                   <td class="h-name">
                     <span style="display: block;">${escapeHtml(s.name)}</span>
-                    <a href="https://${s.site}" target="_blank" style="color: var(--cyan); font-size: 8px; text-decoration: none;">${escapeHtml(s.site)} ↗</a>
+                    <a href="https://${s.site}" target="_blank" style="color: var(--cyan); font-size: 8px; text-decoration: none; margin-right: 8px;">${escapeHtml(s.site)} ↗</a>
+                    <button class="tracker-add-btn" style="font-size: 8px; padding: 1px 4px; line-height: 1; display: inline-block;" onclick="addStartupToTracker('${escapeHtml(s.name)}', '${escapeHtml(s.site)}', 'Harmonic Q2 2026', '${escapeHtml(s.sector)}')">+ track</button>
                   </td>
                   <td class="h-sector">${escapeHtml(s.sector)}</td>
                   <td class="h-growth">
@@ -419,7 +420,10 @@ function selectFeedItem(uniqueId) {
               <div class="yc-startup-desc">${escapeHtml(c.description)}</div>
               <div class="yc-startup-footer">
                 <span class="yc-startup-meta">Sector: <strong style="color: var(--text-dim)">${escapeHtml(c.sector)}</strong> · Size: ${escapeHtml(c.size)}</span>
-                <a href="https://${c.site}" target="_blank" class="yc-startup-link">Apply ↗</a>
+                <div style="display: flex; gap: 6px; align-items: center;">
+                  <button class="tracker-add-btn" style="font-size: 9px; padding: 2px 8px; border: 1px solid var(--green-mid); background: var(--green-dim); color: var(--green);" onclick="addStartupToTracker('${escapeHtml(c.name)}', '${escapeHtml(c.site)}', 'YC ${data.batch}', '${escapeHtml(c.description)}')">Track</button>
+                  <a href="https://${c.site}" target="_blank" class="yc-startup-link">Apply ↗</a>
+                </div>
               </div>
             </div>
           `).join('')}
@@ -484,6 +488,7 @@ function selectFeedItem(uniqueId) {
 
       <div class="action-buttons">
         <a href="${item.link}" target="_blank" class="open-btn">↗ OPEN ORIGINAL RELEASE</a>
+        <button class="add-tracker-import-btn" onclick="importStartupToTracker('${escapeHtml(item.title)}', '${item.link}', '${escapeHtml(item.source)}')">✚ ADD ARTICLE TO PIPELINE</button>
         <button class="abs-btn" onclick="shareItem('${escapeHtml(item.title)}')">⎋ SHARE DEAL INTEL</button>
       </div>
     </div>
@@ -598,6 +603,7 @@ function resetCountdown() {
 
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
+  loadTrackerData();
   fetchFeedData(false);
 });
 
@@ -630,22 +636,77 @@ let chartActiveSources = ['a16z Build', 'Next Play', 'Early Days Substack']; // 
 
 function switchView(view) {
   activeView = view;
-  const feedContent = document.getElementById('feed-content');
+  
+  // Containers
+  const feedViewWrap = document.getElementById('feed-view-container');
   const chartContainer = document.getElementById('chart-view-container');
+  const trackerContainer = document.getElementById('tracker-workspace-container');
+  
+  // Sidebars
+  const discoverySidebar = document.getElementById('sidebar-discovery-views');
+  const trackerSidebar = document.getElementById('sidebar-tracker-views');
+  
+  // Right Sidebar (details)
+  const discoveryDetail = document.getElementById('detail-discovery-views');
+  const trackerDetail = document.getElementById('detail-tracker-views');
+  
+  // Tabs
   const feedTabBtn = document.getElementById('tab-btn-feed');
   const chartTabBtn = document.getElementById('tab-btn-chart');
+  const trackerTabBtn = document.getElementById('tab-btn-tracker');
+
+  // Reset active tab styles
+  [feedTabBtn, chartTabBtn, trackerTabBtn].forEach(btn => {
+    if (btn) btn.classList.remove('active');
+  });
 
   if (view === 'feed') {
-    if (feedContent) feedContent.style.display = 'block';
+    if (feedViewWrap) feedViewWrap.style.display = 'block';
     if (chartContainer) chartContainer.style.display = 'none';
+    if (trackerContainer) trackerContainer.style.display = 'none';
+    
+    if (discoverySidebar) discoverySidebar.style.display = 'block';
+    if (trackerSidebar) trackerSidebar.style.display = 'none';
+    
+    if (discoveryDetail) discoveryDetail.style.display = 'flex';
+    if (trackerDetail) trackerDetail.style.display = 'none';
+    
     if (feedTabBtn) feedTabBtn.classList.add('active');
-    if (chartTabBtn) chartTabBtn.classList.remove('active');
-  } else {
-    if (feedContent) feedContent.style.display = 'none';
+    
+    updateStatsPanel();
+  } else if (view === 'chart') {
+    if (feedViewWrap) feedViewWrap.style.display = 'none';
     if (chartContainer) chartContainer.style.display = 'flex';
-    if (feedTabBtn) feedTabBtn.classList.remove('active');
+    if (trackerContainer) trackerContainer.style.display = 'none';
+    
+    if (discoverySidebar) discoverySidebar.style.display = 'block';
+    if (trackerSidebar) trackerSidebar.style.display = 'none';
+    
+    if (discoveryDetail) discoveryDetail.style.display = 'flex';
+    if (trackerDetail) trackerDetail.style.display = 'none';
+    
     if (chartTabBtn) chartTabBtn.classList.add('active');
     renderTrendChart();
+  } else if (view === 'tracker') {
+    if (feedViewWrap) feedViewWrap.style.display = 'none';
+    if (chartContainer) chartContainer.style.display = 'none';
+    if (trackerContainer) trackerContainer.style.display = 'flex';
+    
+    if (discoverySidebar) discoverySidebar.style.display = 'none';
+    if (trackerSidebar) trackerSidebar.style.display = 'block';
+    
+    if (discoveryDetail) discoveryDetail.style.display = 'none';
+    if (trackerDetail) trackerDetail.style.display = 'block';
+    
+    if (trackerTabBtn) trackerTabBtn.classList.add('active');
+    
+    renderTrackerList();
+    renderTrackerWorkspace();
+    updateTrackerStats();
+    
+    // Update stats bar active filter
+    document.getElementById('stat-filter').textContent = 'PSYCHO JOB PIPELINE';
+    document.getElementById('stat-filtered').textContent = `Tracking ${trackedStartups.length} startups`;
   }
 }
 
@@ -926,4 +987,379 @@ function toggleMaximizeChart(isOpen) {
 function setTimeWindow(val) {
   activeTimeWindow = val;
   applyFilters();
+}
+
+// ==========================================
+// PSYCHO JOB TRACKER ENGINE
+// ==========================================
+
+let trackedStartups = [];
+let selectedTrackedId = null;
+
+function loadTrackerData() {
+  const saved = localStorage.getItem('psycho_job_tracker_data');
+  if (saved) {
+    try {
+      trackedStartups = JSON.parse(saved);
+    } catch (e) {
+      console.error('Failed to parse tracker data:', e);
+      trackedStartups = [];
+    }
+  } else {
+    // Seed default mock startups to look premium and guide the user
+    trackedStartups = [
+      {
+        id: 'mock-1',
+        name: 'Figure',
+        website: 'figure.ai',
+        source: 'Harmonic Hot 25',
+        desc: 'Building next-generation autonomous humanoid robots for manufacturing, logistics, and retail applications.',
+        founderTwitter: 'adcock_brett',
+        founderEmail: 'brett@figure.ai',
+        followedFounders: true,
+        followedTeam: true,
+        hasOSCodebase: false,
+        deepResearchCompleted: true,
+        researchNotes: 'Spotted on Harmonic Hot 25 index with a headcount growth rate of +45% in Q2 2026. Brett Adcock is the founder. They have a closed codebase, but they release regular demo videos. Focus on observing control issues and bipedal mechanics in their demo logs.',
+        interactionNotes: 'Replied to Brett Adcock\'s tweet about bimanual dexterity: suggested an approach to reinforcement learning policies for peg-in-hole insertion. Received a like from He He (Core Roboticist).',
+        valueDocLink: 'https://notion.so/figure-humanoid-manipulation-pitch',
+        pitchStatus: 'interviewing',
+        reachoutDMDate: '2026-07-12',
+        reachoutDone: true
+      },
+      {
+        id: 'mock-2',
+        name: 'Physical Intelligence',
+        website: 'physicalintelligence.company',
+        source: 'Harmonic Hot 25',
+        desc: 'Developing general-purpose artificial intelligence and foundation models to control robotic hardware.',
+        founderTwitter: 'karol_hausman',
+        founderEmail: 'contact@pi.co',
+        followedFounders: true,
+        followedTeam: false,
+        hasOSCodebase: false,
+        deepResearchCompleted: false,
+        researchNotes: 'Harmonic rank #2, Series A ($70M). Sourcing team members from followers list of @Physical_Intel.',
+        interactionNotes: 'Asked Karol Hausman a question regarding zero-shot cross-embodiment policies on Twitter. Awaiting response.',
+        valueDocLink: '',
+        pitchStatus: 'drafting',
+        reachoutDMDate: '',
+        reachoutDone: false
+      }
+    ];
+    saveTrackerData();
+  }
+}
+
+function saveTrackerData() {
+  localStorage.setItem('psycho_job_tracker_data', JSON.stringify(trackedStartups));
+  updateTrackerStats();
+}
+
+function updateTrackerStats() {
+  const total = trackedStartups.length;
+  
+  const followedCount = trackedStartups.filter(s => s.followedFounders).length;
+  const osCount = trackedStartups.filter(s => s.hasOSCodebase).length;
+  const pitchedCount = trackedStartups.filter(s => s.pitchStatus !== 'not-pitching' && s.pitchStatus !== 'drafting').length;
+
+  const totalEl = document.getElementById('tracker-stat-total');
+  const followedEl = document.getElementById('tracker-stat-followed');
+  const osEl = document.getElementById('tracker-stat-os');
+  const pitchedEl = document.getElementById('tracker-stat-pitched');
+
+  if (totalEl) totalEl.textContent = total;
+  if (followedEl) followedEl.textContent = `${followedCount} / ${total}`;
+  if (osEl) osEl.textContent = `${osCount} / ${total}`;
+  if (pitchedEl) pitchedEl.textContent = `${pitchedCount} / ${total}`;
+}
+
+function addStartupToTracker(name, website, source, desc = '') {
+  // Check duplicate
+  const exists = trackedStartups.find(s => s.name.toLowerCase() === name.toLowerCase());
+  if (exists) {
+    alert(`"${name}" is already in your Job Tracker!`);
+    selectedTrackedId = exists.id;
+    switchView('tracker');
+    return;
+  }
+
+  const newStartup = {
+    id: 'startup-' + Date.now(),
+    name: name,
+    website: website || '',
+    source: source || 'Self-Found',
+    desc: desc || '',
+    founderTwitter: '',
+    founderEmail: '',
+    followedFounders: false,
+    followedTeam: false,
+    hasOSCodebase: false,
+    deepResearchCompleted: false,
+    researchNotes: '',
+    interactionNotes: '',
+    valueDocLink: '',
+    pitchStatus: 'not-pitching',
+    reachoutDMDate: '',
+    reachoutDone: false
+  };
+
+  trackedStartups.push(newStartup);
+  saveTrackerData();
+  selectedTrackedId = newStartup.id;
+  renderTrackerList();
+  renderTrackerWorkspace();
+  
+  alert(`"${name}" has been added to your Psycho Job Tracker targets!`);
+  switchView('tracker');
+}
+
+function importStartupToTracker(title, link, source) {
+  let name = title;
+  let website = '';
+  
+  const cleanTitle = title.toLowerCase();
+  if (cleanTitle.includes('ramp saas spend report')) {
+    name = 'Ramp';
+    website = 'ramp.com';
+  } else if (cleanTitle.includes('ramp monthly vendor report')) {
+    name = 'Ramp';
+    website = 'ramp.com';
+  } else {
+    // Strip prefixes
+    name = title.replace(/^yc\s+[ws]\d+\s+batch:\s*/i, '')
+                .replace(/^harmonic\s+hot\s+25:\s*/i, '')
+                .replace(/top breakout.*/i, '')
+                .trim();
+  }
+
+  addStartupToTracker(name, website, source, title);
+}
+
+function deleteStartupFromTracker(id) {
+  if (confirm('Are you sure you want to remove this startup from your tracking pipeline?')) {
+    trackedStartups = trackedStartups.filter(s => s.id !== id);
+    saveTrackerData();
+    if (selectedTrackedId === id) {
+      selectedTrackedId = trackedStartups.length > 0 ? trackedStartups[0].id : null;
+    }
+    renderTrackerList();
+    renderTrackerWorkspace();
+  }
+}
+
+function updateStartupField(id, field, value) {
+  const startup = trackedStartups.find(s => s.id === id);
+  if (startup) {
+    startup[field] = value;
+    saveTrackerData();
+    
+    if (field === 'name' || field === 'pitchStatus' || field === 'website') {
+      renderTrackerList();
+    }
+  }
+}
+
+function renderTrackerList() {
+  const container = document.getElementById('tracker-list-container');
+  if (!container) return;
+
+  if (trackedStartups.length === 0) {
+    container.innerHTML = `
+      <div class="no-results" style="border: none; padding: 30px 10px; font-size: 10px;">
+        NO TARGETS TRACKED.<br>ADD ONE MANUALLY OR FROM THE FEEDS ABOVE.
+      </div>
+    `;
+    return;
+  }
+
+  const html = trackedStartups.map(startup => {
+    const isSelected = startup.id === selectedTrackedId;
+    let statusClass = 'badge-not-pitching';
+    let statusLabel = 'Discovery';
+    
+    if (startup.pitchStatus === 'drafting') { statusClass = 'badge-drafting'; statusLabel = 'Drafting'; }
+    else if (startup.pitchStatus === 'pitched') { statusClass = 'badge-pitched'; statusLabel = 'Pitched'; }
+    else if (startup.pitchStatus === 'interviewing') { statusClass = 'badge-interviewing'; statusLabel = 'Interview'; }
+    else if (startup.pitchStatus === 'offer') { statusClass = 'badge-offer'; statusLabel = 'Offer'; }
+    else if (startup.pitchStatus === 'archived') { statusClass = 'badge-archived'; statusLabel = 'Archived'; }
+
+    return `
+      <div class="tracker-item-card ${isSelected ? 'selected' : ''}" onclick="selectTrackedStartup('${startup.id}')">
+        <div class="tracker-item-name">${escapeHtml(startup.name)}</div>
+        <div class="tracker-item-meta">
+          <span>${escapeHtml(startup.website || 'no site')}</span>
+          <span class="tracker-status-badge ${statusClass}">${statusLabel}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = html;
+}
+
+function selectTrackedStartup(id) {
+  selectedTrackedId = id;
+  renderTrackerList();
+  renderTrackerWorkspace();
+}
+
+function renderTrackerWorkspace() {
+  const container = document.getElementById('tracker-workspace-content');
+  if (!container) return;
+
+  const startup = trackedStartups.find(s => s.id === selectedTrackedId);
+  if (!startup) {
+    container.innerHTML = `
+      <div class="tracker-workspace-empty">
+        <div class="detail-empty-icon" style="width: 60px; height: 60px;">
+          <svg width="24" height="24" viewBox="0 0 20 20" fill="none">
+            <rect x="3" y="3" width="14" height="16" rx="2" stroke="#536b8c" stroke-width="1.2"/>
+            <path d="M6 7h8M6 10h8M6 13h5" stroke="#536b8c" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="detail-empty-text" style="font-size: 11px; letter-spacing: 0.1em; line-height: 1.8;">
+          SELECT A TARGET STARTUP FROM THE LEFT PANEL<br>OR ADD A NEW ONE TO INITIATE RECONNAISSANCE.
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="tracker-workspace-panel">
+      <!-- Section 1: Basic Recon -->
+      <div class="tracker-section">
+        <div class="tracker-section-title">
+          <span>Step 1 &amp; 2: Basic Intelligence &amp; Digital Recon</span>
+          <span style="font-size: 8px; color: var(--text-muted); font-weight: normal;">Source: ${escapeHtml(startup.source)}</span>
+        </div>
+        <div class="tracker-form-grid">
+          <div class="tracker-form-group">
+            <label class="tracker-label">Company Name</label>
+            <input type="text" class="tracker-input" value="${escapeHtml(startup.name)}" oninput="updateStartupField('${startup.id}', 'name', this.value)">
+          </div>
+          <div class="tracker-form-group">
+            <label class="tracker-label">Website Domain</label>
+            <input type="text" class="tracker-input" value="${escapeHtml(startup.website)}" placeholder="e.g. figure.ai" oninput="updateStartupField('${startup.id}', 'website', this.value)">
+          </div>
+          <div class="tracker-form-group">
+            <label class="tracker-label">Founder Twitter / X handles</label>
+            <input type="text" class="tracker-input" value="${escapeHtml(startup.founderTwitter)}" placeholder="e.g. adcock_brett, karol_hausman" oninput="updateStartupField('${startup.id}', 'founderTwitter', this.value)">
+          </div>
+          <div class="tracker-form-group">
+            <label class="tracker-label">Founders' Emails</label>
+            <input type="text" class="tracker-input" value="${escapeHtml(startup.founderEmail)}" placeholder="e.g. brett@figure.ai" oninput="updateStartupField('${startup.id}', 'founderEmail', this.value)">
+          </div>
+          <div class="tracker-form-group full-width">
+            <label class="tracker-label">Brief Description / Mission</label>
+            <textarea class="tracker-textarea" oninput="updateStartupField('${startup.id}', 'desc', this.value)">${escapeHtml(startup.desc)}</textarea>
+          </div>
+          <div class="tracker-form-group full-width">
+            <label class="tracker-label">Digital Footprint Progress Check</label>
+            <div class="tracker-checkbox-list">
+              <label class="tracker-checkbox-row">
+                <input type="checkbox" ${startup.followedFounders ? 'checked' : ''} onchange="updateStartupField('${startup.id}', 'followedFounders', this.checked)">
+                <span>Followed Founders on Twitter/X (Essential)</span>
+              </label>
+              <label class="tracker-checkbox-row">
+                <input type="checkbox" ${startup.followedTeam ? 'checked' : ''} onchange="updateStartupField('${startup.id}', 'followedTeam', this.checked)">
+                <span>Followed Core Team / Engineers (from company follower list)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Codebase & Research -->
+      <div class="tracker-section">
+        <div class="tracker-section-title">Step 3: Rawdogg &amp; Deep Research</div>
+        <div class="tracker-checkbox-list" style="margin-bottom: 14px;">
+          <label class="tracker-checkbox-row">
+            <input type="checkbox" ${startup.hasOSCodebase ? 'checked' : ''} onchange="updateStartupField('${startup.id}', 'hasOSCodebase', this.checked)">
+            <span style="color: var(--green); font-weight: bold;">★ OPEN SOURCE CODEBASE FOUND (JACKPOT!)</span>
+          </label>
+          <label class="tracker-checkbox-row">
+            <input type="checkbox" ${startup.deepResearchCompleted ? 'checked' : ''} onchange="updateStartupField('${startup.id}', 'deepResearchCompleted', this.checked)">
+            <span>Deep Research Phase Completed</span>
+          </label>
+        </div>
+        <div class="tracker-form-group">
+          <label class="tracker-label">Reconnaissance Notes (Problems faced, tech stack, codebase insights)</label>
+          <textarea class="tracker-textarea" style="min-height: 100px;" placeholder="What software do they use? What issues are they running into? How can you help?" oninput="updateStartupField('${startup.id}', 'researchNotes', this.value)">${escapeHtml(startup.researchNotes)}</textarea>
+        </div>
+      </div>
+
+      <!-- Section 3: Value Pitching -->
+      <div class="tracker-section">
+        <div class="tracker-section-title">Step 4 &amp; 5: Value Pitching &amp; Outreach</div>
+        <div class="tracker-form-grid">
+          <div class="tracker-form-group">
+            <label class="tracker-label">Pipeline Status</label>
+            <select class="tracker-select" onchange="updateStartupField('${startup.id}', 'pitchStatus', this.value)">
+              <option value="not-pitching" ${startup.pitchStatus === 'not-pitching' ? 'selected' : ''}>Not Pitching (Researching)</option>
+              <option value="drafting" ${startup.pitchStatus === 'drafting' ? 'selected' : ''}>Drafting Value Document</option>
+              <option value="pitched" ${startup.pitchStatus === 'pitched' ? 'selected' : ''}>Value Pitch Sent</option>
+              <option value="interviewing" ${startup.pitchStatus === 'interviewing' ? 'selected' : ''}>Interviewing / In Conversations</option>
+              <option value="offer" ${startup.pitchStatus === 'offer' ? 'selected' : ''}>Offer Received</option>
+              <option value="archived" ${startup.pitchStatus === 'archived' ? 'selected' : ''}>Archived / Postponed</option>
+            </select>
+          </div>
+          <div class="tracker-form-group">
+            <label class="tracker-label">Value Document / Pitch Link (Notion/GitHub)</label>
+            <input type="text" class="tracker-input" value="${escapeHtml(startup.valueDocLink)}" placeholder="e.g. https://notion.so/my-value-deck" oninput="updateStartupField('${startup.id}', 'valueDocLink', this.value)">
+          </div>
+          <div class="tracker-form-group full-width">
+            <label class="tracker-label">Interaction Log (Comments, suggestions, question threads)</label>
+            <textarea class="tracker-textarea" placeholder="List dates and summaries of comments, ideas suggested, and cold emails sent..." oninput="updateStartupField('${startup.id}', 'interactionNotes', this.value)">${escapeHtml(startup.interactionNotes)}</textarea>
+          </div>
+          <div class="tracker-form-group">
+            <label class="tracker-label">Reachout Date</label>
+            <input type="date" class="tracker-input" value="${escapeHtml(startup.reachoutDMDate)}" onchange="updateStartupField('${startup.id}', 'reachoutDMDate', this.value)">
+          </div>
+          <div class="tracker-form-group" style="justify-content: center;">
+            <label class="tracker-checkbox-row" style="margin-top: 15px;">
+              <input type="checkbox" ${startup.reachoutDone ? 'checked' : ''} onchange="updateStartupField('${startup.id}', 'reachoutDone', this.checked)">
+              <span>Out-of-band DM/Email Pitch Completed</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="tracker-row-actions">
+        <button class="tracker-btn-danger" onclick="deleteStartupFromTracker('${startup.id}')">REMOVE TARGET</button>
+        <button class="tracker-btn-save" onclick="alert('All changes saved! LocalStorage sync active.')">FORCE SYNC STATUS</button>
+      </div>
+    </div>
+  `;
+}
+
+// Modal Toggle Handlers
+function toggleAddModal(isOpen) {
+  const modal = document.getElementById('tracker-add-modal');
+  if (!modal) return;
+  modal.style.display = isOpen ? 'flex' : 'none';
+  
+  if (isOpen) {
+    document.getElementById('modal-add-name').value = '';
+    document.getElementById('modal-add-site').value = '';
+    document.getElementById('modal-add-source').value = 'Self-Found';
+    document.getElementById('modal-add-desc').value = '';
+  }
+}
+
+function saveNewStartupFromModal() {
+  const name = document.getElementById('modal-add-name').value.trim();
+  const site = document.getElementById('modal-add-site').value.trim();
+  const source = document.getElementById('modal-add-source').value.trim();
+  const desc = document.getElementById('modal-add-desc').value.trim();
+
+  if (!name) {
+    alert('Please enter a company name.');
+    return;
+  }
+
+  addStartupToTracker(name, site, source, desc);
+  toggleAddModal(false);
 }
